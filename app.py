@@ -65,7 +65,7 @@ if st.button("Assess Stress Risk"):
     - [Gerber et al. (2014) – Exercise as a Buffer for Stress](https://pubmed.ncbi.nlm.nih.gov/25136547/)
     - [Shaffer & Ginsberg (2017) – HRV Clinical Guidelines](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5624990/)
 
-    This is not a clinical diagnosis tool — but it is based on empirical evidence from behavioral medicine and psychophysiology.
+    This is not a clinical diagnosis tool, but it is based on empirical evidence from behavioral medicine and psychophysiology.
     """)
 
     # --- Data Used ---
