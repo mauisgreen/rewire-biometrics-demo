@@ -31,9 +31,8 @@ if st.button("Assess Stress Risk"):
     st.markdown(f"Score: **{score}/100**")
     st.info("This is a simulated model. For clinical use, always consult a professional.")
 
-    # Explainability logic
+    # Explanation block
     explanations = []
-
     if sleep < 6:
         explanations.append("Low sleep duration may increase cortisol and emotional reactivity.")
     if activity < 30:
@@ -45,7 +44,6 @@ if st.button("Assess Stress Risk"):
     if meds == "No":
         explanations.append("Missed medication may disrupt baseline stability.")
 
-    # Display reasons
     if explanations:
         st.markdown("### Why this score?")
         for item in explanations:
@@ -53,42 +51,64 @@ if st.button("Assess Stress Risk"):
     else:
         st.success("All biometric indicators are within healthy ranges.")
 
-with st.expander("How was this score calculated?"):
-    # --- Research Sources ---
-    st.markdown("### Based on Research")
-    st.markdown("""
-    This tool was inspired by research linking sleep, activity, HRV, and resting heart rate to psychological stress.
+    # Follow-up plan (always shown after button click)
+    st.markdown("---")
+    st.markdown("### Suggested Rewire Plan (Next 30 Days)")
+    st.markdown("Based on your recent biometric data, here’s a therapeutic activity plan...")
 
-    - 🛏[Van Reeth et al. (2000) – Sleep and Stress](https://pubmed.ncbi.nlm.nih.gov/11148897/)
-    - [Kim et al. (2018) – HRV and Stress Monitoring](https://pubmed.ncbi.nlm.nih.gov/29713438/)
-    - [Gerber et al. (2014) – Exercise as a Buffer for Stress](https://pubmed.ncbi.nlm.nih.gov/25136547/)
-    - [Shaffer & Ginsberg (2017) – HRV Clinical Guidelines](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5624990/)
-    """)
+    if risk_level == "High":
+        st.markdown("""
+        - **Cognitive Reframing (Daily)** — Strengthen flexible thinking.
+        - **Stress Inoculation Game (5x/week)** — Practice calming under pressure.
+        - **Emotion Labeling (3x/week)** — Voice journaling and reflection.
+        - **Wind-Down Protocol (Nightly)** — Guided parasympathetic activation.
+        """)
+    elif risk_level == "Moderate":
+        st.markdown("""
+        - **Cognitive Flexibility Game (3x/week)** — Train adaptability.
+        - **Emotion Check-In (2x/week)** — Track emotional awareness.
+        - **Mindful Response Trainer (Nightly)** — Post-screen guided breathing.
+        """)
+    else:
+        st.markdown("""
+        - **Resilience Booster (2x/week)** — Optimistic memory recall.
+        - **Evening Calm Game (Optional)** — Sleep-focused cool-down.
+        - **Streak Tracker** — Daily usage monitor.
+        """)
 
-    # --- Data Used ---
-    st.markdown("### Data Used in This Prototype")
-    st.markdown("""
-    This demo uses the [Sleep Health and Lifestyle Dataset (Kaggle)](https://www.kaggle.com/datasets/uom190346a/sleep-health-and-lifestyle-dataset), which includes behavioral health records from ~370 individuals.
+    st.info("Rewire DTx activities are short, personalized, and adapt with progress.")
 
-    - Cleaned features: `Sleep Duration`, `Quality of Sleep`, `Physical Activity Level`, `Heart Rate`, `Daily Steps`
-    - Target variable: `Stress Level` (scale 1–10)
-    - Model: `RandomForestRegressor`, MAE: ~0.04, R²: ~0.98
-    - Preprocessing: dropped nulls, removed `Person ID`, encoded target
-    """)
+    # Score calculation details (expander only shows after score is assessed)
+    with st.expander("How was this score calculated?"):
+        st.markdown("### Based on Research")
+        st.markdown("""
+        - [Van Reeth et al. (2000) – Sleep and Stress](https://pubmed.ncbi.nlm.nih.gov/11148897/)
+        - [Kim et al. (2018) – HRV and Stress Monitoring](https://pubmed.ncbi.nlm.nih.gov/29713438/)
+        ...
+        """)
 
-    # --- Feature Weights ---
-    st.markdown("### Key Predictive Factors")
-    st.markdown("""
-    - **Sleep < 6 hrs** → +25 risk  
-    - **Activity < 30 mins** → +20 risk  
-    - **Heart Rate > 85 bpm** → +20 risk  
-    - **HRV < 50** → +20 risk  
-    - **Missed medication** → +15 risk  
-    """)
+        st.markdown("### Data Used in This Prototype")
+        st.markdown("""
+        Dataset: [Sleep Health and Lifestyle Dataset (Kaggle)](https://www.kaggle.com/datasets/uom190346a/sleep-health-and-lifestyle-dataset)
 
-    st.markdown("""
-    These scores reflect relative risk weights based on psychophysiology research and can be tuned based on clinical priorities or training data.
-    """)
+        - Model: Rule-based logic (RandomForest in experimental mode)
+        - MAE ~0.04, R² ~0.98
+        - Target: Stress Level (1–10)
+        """)
+
+        st.markdown("### Key Predictive Factors")
+        st.markdown("""
+        - Sleep < 6 hrs → +25
+        - Activity < 30 mins → +20
+        - HR > 85 bpm → +20
+        - HRV < 50 → +20
+        - Missed meds → +15
+        """)
+
+        st.markdown("""
+        These scores reflect relative weights from psychophysiology research and may be tuned.
+        """)
+        
     # --- Personalized Rewire Plan ---
     st.markdown("---")
     st.markdown("### Suggested Rewire Plan (Next 30 Days)")
