@@ -161,7 +161,7 @@ with st.expander("Regulatory & Compliance Readiness"):
     - Tool is structured to comply with **FDA SaMD guidance** and **IMDRF risk-based framework**.
     - Decision logic is explainable, research-supported, and structured for clinical oversight.
     - Future features include audit logging, post-market surveillance, and model monitoring.
-    - Suitable for De Novo or 510(k) submission with cognitive behavioral intervention claims.
+    - Suitable for 510(k) submission due to being built on NeuroFormance, an FDA-cleared digital cognitive baseline and monitoring engine.
     """)
 
     st.markdown("### AI Transparency & Clinical Safety")
