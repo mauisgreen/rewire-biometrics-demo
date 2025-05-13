@@ -130,3 +130,41 @@ st.markdown("#### Learn more")
 st.markdown("Visit our official website: [rewiredtx.com](https://www.rewiredtx.com)")
 
 st.markdown("Questions or concerns? Contact: **maureen@rewiredtx.com**😉")
+# --- Compliance Readiness ---
+with st.expander("🔐 Regulatory & Compliance Readiness"):
+    st.markdown("### ✅ HIPAA Preparedness")
+
+    st.markdown("""
+    - Data is anonymized and not stored unless explicitly permitted by the user.
+    - No Protected Health Information (PHI) is collected in this prototype.
+    - Designed for future hosting on HIPAA-compliant infrastructure (e.g., AWS or GCP with BAA).
+    - All inputs and outputs encrypted in transit (TLS 1.2+), with support for future AES-256 at rest.
+    """)
+
+    st.markdown("### 🩺 FDA SaMD Alignment (Future Pathway)")
+
+    st.markdown("""
+    - Tool is structured to comply with **FDA SaMD guidance** and **IMDRF risk-based framework**.
+    - Decision logic is explainable, research-supported, and structured for clinical oversight.
+    - Future features include audit logging, post-market surveillance, and model monitoring.
+    - Suitable for De Novo or 510(k) submission with cognitive behavioral intervention claims.
+    """)
+
+    st.markdown("### 🤖 AI Transparency & Clinical Safety")
+
+    st.markdown("""
+    - Rule-based logic is transparent and traceable.
+    - Future versions will integrate explainability methods (e.g., SHAP) for AI models.
+    - Clear human-in-the-loop design to support clinicians, not replace them.
+    - Suggested activities include user-friendly language and time estimates for accessibility.
+    """)
+
+    st.markdown("### 🛠️ Next Milestones")
+
+    st.markdown("""
+    - [ ] Migrate hosting to HIPAA-compliant infrastructure  
+    - [ ] Begin Design History File (DHF) documentation  
+    - [ ] Recruit advisors for clinical validation study  
+    - [ ] Establish security, privacy, and access controls for production  
+    - [ ] Evaluate Digital Therapeutic (DTx) classification under FDA guidance  
+    """)
