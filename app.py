@@ -86,6 +86,7 @@ with st.expander("How was this score calculated?"):
     - **Missed medication** → +15 risk  
     """)
 
+    st.markdown("""
     These scores reflect relative risk weights based on psychophysiology research and can be tuned based on clinical priorities or training data.
     """)
     # --- Personalized Rewire Plan ---
@@ -123,8 +124,8 @@ st.markdown("Visit our official website: [rewiredtx.com](https://www.rewiredtx.c
 
 st.markdown("Questions or concerns? Contact: **maureen@rewiredtx.com**😉")
 # --- Compliance Readiness ---
-with st.expander("🔐 Regulatory & Compliance Readiness"):
-    st.markdown("### ✅ HIPAA Preparedness")
+with st.expander("Regulatory & Compliance Readiness"):
+    st.markdown("### HIPAA Preparedness")
 
     st.markdown("""
     - Data is anonymized and not stored unless explicitly permitted by the user.
@@ -133,7 +134,7 @@ with st.expander("🔐 Regulatory & Compliance Readiness"):
     - All inputs and outputs encrypted in transit (TLS 1.2+), with support for future AES-256 at rest.
     """)
 
-    st.markdown("### 🩺 FDA SaMD Alignment (Future Pathway)")
+    st.markdown("### FDA SaMD Alignment (Future Pathway)")
 
     st.markdown("""
     - Tool is structured to comply with **FDA SaMD guidance** and **IMDRF risk-based framework**.
@@ -142,7 +143,7 @@ with st.expander("🔐 Regulatory & Compliance Readiness"):
     - Suitable for De Novo or 510(k) submission with cognitive behavioral intervention claims.
     """)
 
-    st.markdown("### 🤖 AI Transparency & Clinical Safety")
+    st.markdown("### AI Transparency & Clinical Safety")
 
     st.markdown("""
     - Rule-based logic is transparent and traceable.
@@ -151,7 +152,7 @@ with st.expander("🔐 Regulatory & Compliance Readiness"):
     - Suggested activities include user-friendly language and time estimates for accessibility.
     """)
 
-    st.markdown("### 🛠️ Next Milestones")
+    st.markdown("### Next Milestones")
 
     st.markdown("""
     - [ ] Migrate hosting to HIPAA-compliant infrastructure  
