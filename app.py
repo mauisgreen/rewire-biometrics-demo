@@ -50,35 +50,7 @@ if st.button("Assess Stress Risk"):
             st.markdown(f"- {item}")
     else:
         st.success("All biometric indicators are within healthy ranges.")
-
-    # Follow-up plan (always shown after button click)
-    st.markdown("---")
-    st.markdown("### Suggested Rewire Plan (Next 30 Days)")
-    st.markdown("Based on your recent biometric data, here’s a therapeutic activity plan...")
-
-    if risk_level == "High":
-        st.markdown("""
-        - **Cognitive Reframing (Daily)** — Strengthen flexible thinking.
-        - **Stress Inoculation Game (5x/week)** — Practice calming under pressure.
-        - **Emotion Labeling (3x/week)** — Voice journaling and reflection.
-        - **Wind-Down Protocol (Nightly)** — Guided parasympathetic activation.
-        """)
-    elif risk_level == "Moderate":
-        st.markdown("""
-        - **Cognitive Flexibility Game (3x/week)** — Train adaptability.
-        - **Emotion Check-In (2x/week)** — Track emotional awareness.
-        - **Mindful Response Trainer (Nightly)** — Post-screen guided breathing.
-        """)
-    else:
-        st.markdown("""
-        - **Resilience Booster (2x/week)** — Optimistic memory recall.
-        - **Evening Calm Game (Optional)** — Sleep-focused cool-down.
-        - **Streak Tracker** — Daily usage monitor.
-        """)
-
-    st.info("Rewire DTx activities are short, personalized, and adapt with progress.")
-
-    # Score calculation details (expander only shows after score is assessed)
+        # Score calculation details (expander only shows after score is assessed)
     with st.expander("How was this score calculated?"):
         st.markdown("### Based on Research")
         st.markdown("""
@@ -108,6 +80,33 @@ if st.button("Assess Stress Risk"):
         st.markdown("""
         These scores reflect relative weights from psychophysiology research and may be tuned.
         """)
+
+    # Follow-up plan (always shown after button click)
+    st.markdown("---")
+    st.markdown("### Suggested Rewire Plan (Next 30 Days)")
+    st.markdown("Based on your recent biometric data, here’s a therapeutic activity plan...")
+
+    if risk_level == "High":
+        st.markdown("""
+        - **Cognitive Reframing (Daily)** — Strengthen flexible thinking.
+        - **Stress Inoculation Game (5x/week)** — Practice calming under pressure.
+        - **Emotion Labeling (3x/week)** — Voice journaling and reflection.
+        - **Wind-Down Protocol (Nightly)** — Guided parasympathetic activation.
+        """)
+    elif risk_level == "Moderate":
+        st.markdown("""
+        - **Cognitive Flexibility Game (3x/week)** — Train adaptability.
+        - **Emotion Check-In (2x/week)** — Track emotional awareness.
+        - **Mindful Response Trainer (Nightly)** — Post-screen guided breathing.
+        """)
+    else:
+        st.markdown("""
+        - **Resilience Booster (2x/week)** — Optimistic memory recall.
+        - **Evening Calm Game (Optional)** — Sleep-focused cool-down.
+        - **Streak Tracker** — Daily usage monitor.
+        """)
+
+    st.info("Rewire DTx activities are short, personalized, and adapt with progress and live biometric data.")
         
     # --- Personalized Rewire Plan ---
     st.markdown("---")
