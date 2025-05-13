@@ -53,25 +53,20 @@ if st.button("Assess Stress Risk"):
     else:
         st.success("All biometric indicators are within healthy ranges.")
 
+with st.expander("How was this score calculated?"):
     # --- Research Sources ---
-    st.markdown("---")
     st.markdown("### Based on Research")
-
     st.markdown("""
     This tool was inspired by research linking sleep, activity, HRV, and resting heart rate to psychological stress.
 
-    - [Van Reeth et al. (2000) – Sleep and Stress](https://pubmed.ncbi.nlm.nih.gov/11148897/)
+    - 🛏[Van Reeth et al. (2000) – Sleep and Stress](https://pubmed.ncbi.nlm.nih.gov/11148897/)
     - [Kim et al. (2018) – HRV and Stress Monitoring](https://pubmed.ncbi.nlm.nih.gov/29713438/)
     - [Gerber et al. (2014) – Exercise as a Buffer for Stress](https://pubmed.ncbi.nlm.nih.gov/25136547/)
     - [Shaffer & Ginsberg (2017) – HRV Clinical Guidelines](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5624990/)
-
-    This is not a clinical diagnosis tool, but it is based on empirical evidence from behavioral medicine and psychophysiology.
     """)
 
     # --- Data Used ---
-    st.markdown("---")
     st.markdown("### Data Used in This Prototype")
-
     st.markdown("""
     This demo uses the [Sleep Health and Lifestyle Dataset (Kaggle)](https://www.kaggle.com/datasets/uom190346a/sleep-health-and-lifestyle-dataset), which includes behavioral health records from ~370 individuals.
 
@@ -79,20 +74,17 @@ if st.button("Assess Stress Risk"):
     - Target variable: `Stress Level` (scale 1–10)
     - Model: `RandomForestRegressor`, MAE: ~0.04, R²: ~0.98
     - Preprocessing: dropped nulls, removed `Person ID`, encoded target
-
-    This version uses rules based on research findings, but a trained ML model is also available.
     """)
 
     # --- Feature Weights ---
-    st.markdown("---")
     st.markdown("### Key Predictive Factors")
-
     st.markdown("""
     - **Sleep < 6 hrs** → +25 risk  
     - **Activity < 30 mins** → +20 risk  
     - **Heart Rate > 85 bpm** → +20 risk  
     - **HRV < 50** → +20 risk  
     - **Missed medication** → +15 risk  
+    """)
 
     These scores reflect relative risk weights based on psychophysiology research and can be tuned based on clinical priorities or training data.
     """)
