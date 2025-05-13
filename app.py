@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-st.set_page_config(page_title="Rewire Biometric Stress Demo", layout="centered")
+st.set_page_config(page_title="Rewire Biometric Stress - Demo", layout="centered")
 
-st.title("Rewire: Biometric Stress Risk Checker Demo")
+st.title("Rewire Biometric Stress Risk Checker Demo")
 st.markdown("Simulated wearable inputs (last 24h)")
 
 # Input sliders
@@ -123,10 +123,10 @@ if st.button("Assess Stress Risk"):
         - **Self-monitor using daily Rewire streak tracker.**
         """)
 
-    st.info("Rewire activities are designed for short, engaging use (5–15 minutes) and adapt based on performance.")
+    st.info("Rewire Dtx Games are designed for short, engaging use (5–15 minutes) and adapt based on performance.")
 # --- Footer ---
 st.markdown("---")
 st.markdown("#### Learn more")
 st.markdown("Visit our official website: [rewiredtx.com](https://www.rewiredtx.com)")
 
-st.markdown("Questions or concerns? Contact: **maureen@rewiredtx.com**")
+st.markdown("Questions or concerns? Contact: **maureen@rewiredtx.com**😉")
