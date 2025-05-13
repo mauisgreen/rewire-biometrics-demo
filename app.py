@@ -56,16 +56,18 @@ if st.button("Assess Stress Risk"):
         st.markdown("""
         - [Van Reeth et al. (2000) – Sleep and Stress](https://pubmed.ncbi.nlm.nih.gov/11148897/)
         - [Kim et al. (2018) – HRV and Stress Monitoring](https://pubmed.ncbi.nlm.nih.gov/29713438/)
-        ...
+        - [Gerber et al. (2014) – Exercise as a Buffer for Stress](https://pubmed.ncbi.nlm.nih.gov/25136547/)
+        - [Shaffer & Ginsberg (2017) – HRV Clinical Guidelines](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5624990/)
         """)
 
         st.markdown("### Data Used in This Prototype")
         st.markdown("""
-        Dataset: [Sleep Health and Lifestyle Dataset (Kaggle)](https://www.kaggle.com/datasets/uom190346a/sleep-health-and-lifestyle-dataset)
+        Dataset: [Sleep Health and Lifestyle Dataset (Kaggle)](https://www.kaggle.com/datasets/uom190346a/sleep-health-and-lifestyle-dataset), which includes behavioral health records from ~370 individuals.
 
-        - Model: Rule-based logic (RandomForest in experimental mode)
-        - MAE ~0.04, R² ~0.98
-        - Target: Stress Level (1–10)
+        - Cleaned features: Sleep Duration, Quality of Sleep, Physical Activity Level, Heart Rate, Daily Steps
+        - Target variable: Stress Level (scale 1–10)
+        - Model: RandomForestRegressor, MAE: ~0.04, R²: ~0.98
+        - Preprocessing: dropped nulls, removed Person ID, encoded target
         """)
 
         st.markdown("### Key Predictive Factors")
