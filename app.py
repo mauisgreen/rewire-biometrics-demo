@@ -7,9 +7,6 @@ from PIL import Image
 
 # -------------- CONFIG --------------
 st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
-# ---------- Rewire logo ----------
-logo = Image.open("rewire_dtx_logo.jpg")
-st.image(logo, width=80)
 # -------------- PATIENT & GAME DB --------------
 patients = {
     "RW-001": {"name": "Alex Rivera",  "diagnosis": "PTSD"},
@@ -23,7 +20,16 @@ game_options = {
 }
 
 # -------------- PAGE HEADER --------------
-st.title("Rewire Therapist Dashboard")
+# ---------- Rewire logo + title on one row ----------
+logo = Image.open("rewire_dtx_logo.jpg")
+
+col_logo, col_title = st.columns([1, 8])   # 1 : 8 width ratio (tweak as needed)
+
+with col_logo:
+    st.image(logo, width=60)               # logo size
+
+with col_title:
+    st.markdown("## Rewire Therapist Dashboard")   # H2 keeps height balanced
 pid = st.selectbox("Select Patient", list(patients.keys()))
 pname  = patients[pid]["name"]
 pdiag  = patients[pid]["diagnosis"]
@@ -242,19 +248,10 @@ if run_btn and bio_df is not None:
             st.session_state[uid] = dict(games=[g1, g2, g3], freqs=[f1, f2, f3], note=note)
 
             st.success("✅ Homework plan sent to patient app and email.")
-            st.markdown("### Final Plan Sent")
-            st.write({
-                "Plan": {
-                    g1: f"{f1}×/wk",
-                    g2: f"{f2}×/wk",
-                    g3: f"{f3}×/wk"
-                },
-                "Note": note
-            })
 
     # ---------- confirmation panel ----------
     if st.session_state.get("plan_submitted"):
-        st.markdown("### Final Plan Sent")
+        st.markdown("### Plan Sent to Patient and Saved in EHR")
         d = st.session_state[uid]
         st.write({
             "Plan": {
@@ -262,8 +259,10 @@ if run_btn and bio_df is not None:
                 d["games"][1]: f"{d['freqs'][1]}×/wk",
                 d["games"][2]: f"{d['freqs'][2]}×/wk"
             },
-            "Note": d["note"]
+            "Note": d["Note"]
         })
+    if st.session_state.get("plan_submitted"):
+        st.toast("Report sent and saved ✔️")          # Streamlit ≥1.22             
 # -----------------------------
 # Sidebar: Evidence Base
 # -----------------------------
