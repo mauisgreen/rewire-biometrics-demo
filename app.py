@@ -74,6 +74,16 @@ else:
         hrv_sentence = f"HRV remained within ±5 ms ⚪️ (change: {delta_hrv} ms) during the last {len(bio_trend)} days."
 
     st.caption(hrv_sentence)
+    # Resting HR trend
+    delta_hr = int(bio_trend["resting_hr"].iloc[-1] - bio_trend["resting_hr"].iloc[0])
+    if delta_hr > 5:
+        hr_sentence = f"Resting HR rose by {delta_hr} bpm 🔻 in the last {len(bio_trend)} days."
+    elif delta_hr < -5:
+        hr_sentence = f"Resting HR dropped by {abs(delta_hr)} bpm 💙 over {len(bio_trend)} days."
+    else:
+        hr_sentence = f"Resting HR stayed within ±5 bpm ⚪️ (change: {delta_hr} bpm)."
+
+    st.caption(hr_sentence)
 
     # ---------- EEG TREND + EXPLANATION ----------
     st.markdown("#### 🧠 EEG Trend (FAA & TBR, last 4 sessions)")
@@ -173,58 +183,56 @@ if run_btn and bio_df is not None:
     st.markdown("---")
     st.subheader("Homework Plan Builder")
 
-    # ---------- State flag ----------
-    if "plan_submitted" not in st.session_state:
-        st.session_state.plan_submitted = False
-    # ---------------------------------
-    # ✨ Explain why this plan is suggested
+    # ---- initialise persistent defaults per patient ---------------
+    uid = f"{pid}_defaults"
+    if uid not in st.session_state:
+        # Simple rule-based suggestion
+        if level == "High":
+            games  = ["Cognitive Reframing", "Emotion Labeling", "Guided Breathing"]
+            freqs  = [7, 5, 7]
+        elif level == "Moderate":
+            games  = ["Cognitive Flexibility", "Emotion Check-In", "Guided Breathing"]
+            freqs  = [4, 3, 7]
+        else:
+            games  = ["Resilience Booster", "Emotion Check-In", "Evening Calm"]
+            freqs  = [2, 2, 5]
+
+        if pdiag == "PTSD":
+            games[1] = "Stress Inoculation"; freqs[1] = 4
+
+        st.session_state[uid] = dict(games=games, freqs=freqs, note="Focus on consistency this week.")
+
+    # Persisted defaults
+    games = st.session_state[uid]["games"]
+    freqs = st.session_state[uid]["freqs"]
+    note_default = st.session_state[uid]["note"]
+
     st.info(
-        f"The game plan below is auto-generated from {pname}'s latest EEG, biometric trends, "
-        f"and clinical profile (diagnosis: **{pdiag}**, risk level: **{level}**). "
-        "You can edit any part before sending it to the patient."
+        f"Plan suggested from latest EEG & biometrics "
+        f"(diagnosis **{pdiag}**, risk **{level}**). You can edit anything."
     )
-    # ----- ❶  Generate auto-suggested plan from patient data -----
-    # Simple rules – swap in your own model later
-    if level == "High":
-        default_games  = ["Cognitive Reframing", "Emotion Labeling", "Guided Breathing"]
-        default_freqs  = [7, 5, 7]           # daily, 5×, nightly
-    elif level == "Moderate":
-        default_games  = ["Cognitive Flexibility", "Emotion Check-In", "Guided Breathing"]
-        default_freqs  = [4, 3, 7]
-    else:  # Low
-        default_games  = ["Resilience Booster", "Emotion Check-In", "Evening Calm"]
-        default_freqs  = [2, 2, 5]
 
-    # If diagnosis influences plan (example)
-    if pdiag == "PTSD":
-        default_games[1] = "Stress Inoculation"
-        default_freqs[1] = 4
+    # ---------- EDITABLE FORM ----------
+    with st.form(key=f"plan_form_{pid}", clear_on_submit=False):
+        all_choices = game_options[pdiag][:]
 
-    # -------------------------------------------------------------
+        g1 = st.selectbox("Cognitive Game", all_choices, index=all_choices.index(games[0]))
+        g2 = st.selectbox("Emotion Game",   all_choices, index=all_choices.index(games[1]))
+        g3 = st.selectbox("Evening Game",   all_choices, index=all_choices.index(games[2]))
 
-    st.markdown("#### Suggested Games (editable)")
+        f1 = st.slider(f"{g1} · sessions / week", 1, 7, freqs[0])
+        f2 = st.slider(f"{g2} · sessions / week", 1, 7, freqs[1])
+        f3 = st.slider(f"{g3} · sessions / week", 1, 7, freqs[2])
 
-    all_choices = game_options[pdiag][:]
+        note = st.text_area("Message to patient", value=note_default)
 
-    # Dropdowns pre-populated with suggestions
-    g1 = st.selectbox("Cognitive Game",      all_choices, index=all_choices.index(default_games[0]), key=f"g1_{pid}")
-    g2 = st.selectbox("Emotion Game",        all_choices, index=all_choices.index(default_games[1]), key=f"g2_{pid}")
-    g3 = st.selectbox("Evening Wind-Down",   all_choices, index=all_choices.index(default_games[2]), key=f"g3_{pid}")
+        sent = st.form_submit_button("💾  Save & Send Plan")
 
-    st.markdown("#### Schedule (editable)")
-
-    f1 = st.slider(f"{g1} per week", 1, 7, default_freqs[0], key=f"f1_{pid}")
-    f2 = st.slider(f"{g2} per week", 1, 7, default_freqs[1], key=f"f2_{pid}")
-    f3 = st.slider(f"{g3} per week", 1, 7, default_freqs[2], key=f"f3_{pid}")
-
-    st.markdown("#### Notes to Patient")
-    note = st.text_area("Include any notes or encouragement:", "Focus on consistency and practice this week.")
-
-    # ----- Save / send -----
-    if st.button("💾 Save & Send Plan"):
+    # ---------- on submit ----------
+    if sent:
         st.session_state.plan_submitted = True
-        st.success("✅ Homework sent to patient app and email.")
-        # TODO: actual API / DB push
+        st.session_state[uid] = dict(games=[g1, g2, g3], freqs=[f1, f2, f3], note=note)
+        st.success("✅ Homework plan sent to patient app and email.")
         st.json({
             "Patient":  pname,
             "Diagnosis": pdiag,
@@ -233,16 +241,17 @@ if run_btn and bio_df is not None:
             "Message":  note
         })
 
-    # ----- Confirmation Preview -----
-    if st.session_state.plan_submitted:
+    # ---------- confirmation panel ----------
+    if st.session_state.get("plan_submitted"):
         st.markdown("### Final Plan Sent")
+        d = st.session_state[uid]
         st.write({
             "Plan": {
-                g1: f"{f1}×/wk",
-                g2: f"{f2}×/wk",
-                g3: f"{f3}×/wk"
+                d["games"][0]: f"{d['freqs'][0]}×/wk",
+                d["games"][1]: f"{d['freqs'][1]}×/wk",
+                d["games"][2]: f"{d['freqs'][2]}×/wk"
             },
-            "Note": note
+            "Note": d["note"]
         })
 
 # -----------------------------
