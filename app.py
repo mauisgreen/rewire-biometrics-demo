@@ -184,7 +184,7 @@ if run_btn and bio_df is not None:
     # -----------------------------
     if st.session_state.get("assessment_done"):
 
-     st.markdown("---")
+    st.markdown("---")
     st.subheader("Homework Plan Builder")
 
     # ---- initialise persistent defaults per patient ---------------
@@ -265,15 +265,6 @@ if run_btn and bio_df is not None:
             },
             "Note": d["note"]
         })
-
-# -----------------------------
-# Footer
-# -----------------------------
-st.markdown("---")
-st.markdown("Questions or concerns? Contact **maureen@rewiredtx.com** or visit [rewiredtx.com](https://www.rewiredtx.com)")
-st.info("This tool is for demonstration purposes only and not yet approved for clinical use.")
-
-st.caption("Version 0.4 · Last updated: May 13, 2025")
 # -----------------------------
 # Sidebar: Evidence Base
 # -----------------------------
@@ -299,19 +290,19 @@ with st.sidebar.expander("Research Behind Rewire"):
 
     These sources inform our clinical logic, scoring heuristics, and therapeutic interventions. If you have any questions about the evidence base or methodology, please reach out to our clinical team at **clinical@rewiredtx.com**.
     """)
-    # -----------------------------
-    # Sidebar: Regulatory Notice
-    # -----------------------------
-    with st.sidebar.expander("Regulatory Notice"):
-        st.markdown("""
-        **Intended Classification**: FDA **Class II** Software as a Medical Device (SaMD)  
-        **Planned Pathway**: 510(k) using NeuroFormance™ as predicate  
-        **Key Frameworks**  
-        • IMDRF risk-based classification  
-        • HIPAA / PHIPA data-privacy compliance  
-        • Design History File (DHF) & post-market surveillance  
-        • AI/ML transparency & human-in-the-loop oversight  
-        """)
+# -----------------------------
+# Sidebar: Regulatory Notice
+# -----------------------------
+with st.sidebar.expander("Regulatory Notice"):
+    st.markdown("""
+    **Intended Classification**: FDA **Class II** Software as a Medical Device (SaMD)  
+    **Planned Pathway**: 510(k) using NeuroFormance™ as predicate  
+    **Key Frameworks**  
+    • IMDRF risk-based classification  
+    • HIPAA / PHIPA data-privacy compliance  
+    • Design History File (DHF) & post-market surveillance  
+    • AI/ML transparency & human-in-the-loop oversight  
+    """)
     # -----------------------------
     # Sidebar: Contact Rewire
     # -----------------------------
@@ -325,3 +316,12 @@ with st.sidebar.expander("Research Behind Rewire"):
         Vancouver, BC  
         Canada
         """)
+# -----------------------------
+# Footer
+# -----------------------------
+st.markdown("---")
+st.markdown("Questions or concerns? Contact **maureen@rewiredtx.com** or visit [rewiredtx.com](https://www.rewiredtx.com)")
+st.info("This tool is for demonstration purposes only and not yet approved for clinical use.")
+
+st.caption("Version 0.4 · Last updated: May 13, 2025")
+
