@@ -4,6 +4,25 @@ import altair as alt
 from datetime import datetime
 from PIL import Image
 
+streamlit.errors.StreamlitDuplicateElementId: This app has encountered an error. The original error message is redacted to prevent data leaks. Full error details have been recorded in the logs (if you're on Streamlit Cloud, click on 'Manage app' in the lower right of your app).
+
+Traceback:
+File "/mount/src/rewire-biometrics-demo/app.py", line 238, in <module>
+    f2 = st.slider(f"{g2} · sessions / week", 1, 7, freqs[1])
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/adminuser/venv/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 444, in wrapped_func
+    result = non_optional_func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/adminuser/venv/lib/python3.12/site-packages/streamlit/elements/widgets/slider.py", line 531, in slider
+    return self._slider(
+           ^^^^^^^^^^^^^
+File "/home/adminuser/venv/lib/python3.12/site-packages/streamlit/elements/widgets/slider.py", line 576, in _slider
+    element_id = compute_and_register_element_id(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+File "/home/adminuser/venv/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 239, in compute_and_register_element_id
+    _register_element_id(ctx, element_type, element_id)
+File "/home/adminuser/venv/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 145, in _register_element_id
+    raise StreamlitDuplicateElementId(element_type)
 
 # -------------- CONFIG --------------
 st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
@@ -22,12 +41,9 @@ game_options = {
 # -------------- PAGE HEADER --------------
 # ---------- Rewire logo + title on one row ----------
 logo = Image.open("rewire_dtx_logo.jpg")
-
 col_logo, col_title = st.columns([1, 8])   # 1 : 8 width ratio (tweak as needed)
-
 with col_logo:
     st.image(logo, width=60)               # logo size
-
 with col_title:
     st.markdown("## Rewire Therapist Dashboard")   # H2 keeps height balanced
 pid = st.selectbox("Select Patient", list(patients.keys()))
@@ -234,12 +250,29 @@ if run_btn and bio_df is not None:
         g2 = st.selectbox("Emotion Game",   all_choices, index=idx2)
         g3 = st.selectbox("Evening Game",   all_choices, index=idx3)
 
-        f1 = st.slider(f"{g1} · sessions / week", 1, 7, freqs[0])
-        f2 = st.slider(f"{g2} · sessions / week", 1, 7, freqs[1])
-        f3 = st.slider(f"{g3} · sessions / week", 1, 7, freqs[2])
+        f1 = st.slider(
+            f"{g1} · sessions / week",
+            1, 7, freqs[0],
+            key=f"f1_{pid}_{g1}"
+        )
 
-        note = st.text_area("Message to patient", value=note_default)
+        f2 = st.slider(
+            f"{g2} · sessions / week",
+            1, 7, freqs[1],
+            key=f"f2_{pid}_{g2}"
+        )
 
+        f3 = st.slider(
+            f"{g3} · sessions / week",
+            1, 7, freqs[2],
+            key=f"f3_{pid}_{g3}"
+        )
+
+        note = st.text_area(
+             "Message to patient",
+            value=note_default,
+            key=f"note_{pid}"
+        )
         # ---------- submit ----------
         sent = st.form_submit_button("💾 Save & Send Plan")
         
