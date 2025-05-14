@@ -3,30 +3,55 @@ import pandas as pd
 import numpy as np
 import altair as alt
 
-# --- App Configuration ---
-st.set_page_config(page_title="Rewire Clinical Tools", layout="wide")
+# -----------------------------
+# App Configuration
+# -----------------------------
+st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
 
-# --- Navigation ---
-page = st.sidebar.radio("Choose a view:", [
-    "Biometric Stress Checker",
-    "Patient List",
-    "Patient Profile",
-    "Homework Plan Builder"
-])
+# -----------------------------
+# Simulated Patient Database
+# -----------------------------
+patients = {
+    "RW-001": {"name": "Warren Liu", "diagnosis": "PTSD"},
+    "RW-002": {"name": "Percival Ralston", "diagnosis": "ADHD"},
+    "RW-003": {"name": "Taylor Singh", "diagnosis": "MDD"}
+}
 
-# ------------------------------
-# 1. Biometric Stress Checker
-# ------------------------------
-if page == "Biometric Stress Checker":
-    st.title("Rewire Biometric Stress Risk Checker Demo")
-    st.markdown("Simulated wearable inputs (last 24h)")
+game_options = {
+    "PTSD": ["Cognitive Reframing - ReThink", "Stress Inoculation - Wave Rider", "Guided Breathing", "Emotion Labeling - Mood Match"],
+    "ADHD": ["Focus Trainer - ", "Impulse Control - Impulse Ninja", "Breath Pacer - Breathe the Beat", "Visual Attention - Colour Match"],
+    "MDD": ["Optimism Booster - Mood Bloom", "Cognitive Flexibility - ReRoute", "Mood Tracking - Feel Journal ", "Evening Wind-down - MoonMode"]
+}
 
-    sleep = st.slider("Sleep Duration (hrs)", 0.0, 12.0, 6.5)
-    activity = st.slider("Activity Level (mins)", 0, 120, 45)
-    heart_rate = st.slider("Resting Heart Rate (bpm)", 40, 110, 78)
-    hrv = st.slider("Heart Rate Variability (HRV)", 10, 120, 50)
+# -----------------------------
+# Page Title and Patient Selector
+# -----------------------------
+st.title("Rewire Therapist Dashboard")
+
+selected_id = st.selectbox("Select a patient", options=list(patients.keys()))
+selected_name = patients[selected_id]["name"]
+diagnosis = patients[selected_id]["diagnosis"]
+st.markdown(f"### Patient: **{selected_name}** ({selected_id})")
+st.markdown(f"**Diagnosis:** {diagnosis}")
+
+# -----------------------------
+# 1. In-Clinic Session Entry
+# -----------------------------
+st.subheader("📋 Record In-Clinic Session")
+
+with st.form(key="session_form"):
+    sleep = st.number_input("Sleep Duration (hrs)", min_value=0.0, max_value=12.0, step=0.1, value=6.5)
+    activity = st.number_input("Physical Activity (mins)", min_value=0, max_value=180, step=5, value=45)
+    heart_rate = st.number_input("Resting Heart Rate (bpm)", min_value=40, max_value=110, value=78)
+    hrv = st.number_input("Heart Rate Variability (HRV)", min_value=10, max_value=120, value=50)
     meds = st.radio("Took medication as prescribed?", ("Yes", "No"))
+    notes = st.text_area("Therapist Notes (optional)")
+    submit_button = st.form_submit_button("Run Stress Risk Assessment")
 
+# -----------------------------
+# 2. Stress Risk Assessment
+# -----------------------------
+if submit_button:
     score = 0
     if sleep < 6: score += 25
     if activity < 30: score += 20
@@ -37,108 +62,41 @@ if page == "Biometric Stress Checker":
     risk_level = "Low" if score <= 30 else "Moderate" if score <= 60 else "High"
     color = "🟢" if risk_level == "Low" else "🟡" if risk_level == "Moderate" else "🔴"
 
-    if st.button("Assess Stress Risk"):
-        st.subheader(f"{color} Stress Risk: {risk_level}")
-        st.markdown(f"Score: **{score}/100**")
-        st.info("This is a simulated model. For clinical use, always consult a professional.")
+    st.subheader(f"{color} Stress Risk Level: {risk_level}")
+    st.markdown(f"Score: **{score}/100**")
+    st.markdown("#### Why this score?")
+    if sleep < 6:
+        st.markdown("- Sleep below 6 hours may elevate stress reactivity.")
+    if activity < 30:
+        st.markdown("- Less than 30 mins of activity linked to poor mood regulation.")
+    if heart_rate > 85:
+        st.markdown("- Resting HR greater than 85bpm may indicate autonomic stress.")
+    if hrv < 50:
+        st.markdown("- HRV lower than 50 correlates with reduced emotional resilience.")
+    if meds == "No":
+        st.markdown("- Medication non-adherence may disrupt stability.")
 
-        explanations = []
-        if sleep < 6:
-            explanations.append("Low sleep duration may increase cortisol and emotional reactivity.")
-        if activity < 30:
-            explanations.append("Low activity is associated with increased anxiety and rumination.")
-        if heart_rate > 85:
-            explanations.append("Elevated heart rate is a known marker of acute stress.")
-        if hrv < 50:
-            explanations.append("Low heart rate variability may reflect reduced emotional regulation.")
-        if meds == "No":
-            explanations.append("Missed medication may disrupt baseline stability.")
-
-        if explanations:
-            st.markdown("### Why this score?")
-            for item in explanations:
-                st.markdown(f"- {item}")
-        else:
-            st.success("All biometric indicators are within healthy ranges.")
-
-        with st.expander("How was this score calculated?"):
-            st.markdown("### Based on Research")
-            st.markdown("""
-            - [Van Reeth et al. (2000) – Sleep and Stress](https://pubmed.ncbi.nlm.nih.gov/11148897/)
-            - [Kim et al. (2018) – HRV and Stress Monitoring](https://pubmed.ncbi.nlm.nih.gov/29713438/)
-            - [Gerber et al. (2014) – Exercise as a Buffer for Stress](https://pubmed.ncbi.nlm.nih.gov/25136547/)
-            - [Shaffer & Ginsberg (2017) – HRV Clinical Guidelines](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5624990/)
-            """)
-
-            st.markdown("### Key Predictive Factors")
-            st.markdown("""
-            - Sleep < 6 hrs → +25
-            - Activity < 30 mins → +20
-            - HR > 85 bpm → +20
-            - HRV < 50 → +20
-            - Missed meds → +15
-            """)
-
-        st.markdown("### Suggested Rewire Plan (Next 30 Days)")
-        if risk_level == "High":
-            st.markdown("""
-            - **Cognitive Reframing (Daily)**
-            - **Stress Inoculation Game (5x/week)**
-            - **Emotion Labeling (3x/week)**
-            - **Wind-Down Protocol (Nightly)**
-            """)
-        elif risk_level == "Moderate":
-            st.markdown("""
-            - **Cognitive Flexibility Game (3x/week)**
-            - **Emotion Check-In (2x/week)**
-            - **Mindful Response Trainer (Nightly)**
-            """)
-        else:
-            st.markdown("""
-            - **Resilience Booster (2x/week)**
-            - **Evening Calm Game (Optional)**
-            - **Streak Tracker**
-            """)
-
-# -----------------------------
-# 2. Therapist: Patient List
-# -----------------------------
-elif page == "Patient List":
-    st.title("Therapist Dashboard: Patient Overview")
-    st.dataframe({
-        "Patient ID": ["RW-001", "RW-002", "RW-003"],
-        "Last Session": ["2025-05-09", "2025-05-08", "2025-05-07"],
-        "EEG Trend": ["Stable", "Worsening", "Improving"],
-        "Compliance": ["80%", "50%", "95%"]
-    })
-
-# -----------------------------
-# 3. Therapist: Patient Profile
-# -----------------------------
-elif page == "Patient Profile":
-    st.title("Patient Profile: RW-001")
-    st.subheader("EEG Summary")
-
+    # -----------------------------
+    # 3. EEG Snapshot with Interpretation
+    # -----------------------------
+    st.markdown("---")
+    st.subheader("🧠 EEG Summary")
     try:
         df = pd.read_csv("rewire_clean_eeg_sample.csv")
+        patient_eeg = df[df["patient_id"] == selected_id].tail(4)
 
-        if "faa" in df.columns and "tbr" in df.columns:
-            patient_eeg = df.head(4)  # Simulate last 4 sessions
-            eeg_chart_data = pd.DataFrame({
+        if not patient_eeg.empty:
+            chart_data = pd.DataFrame({
                 "Session": list(range(1, len(patient_eeg) + 1)),
                 "FAA": patient_eeg["faa"].values,
                 "TBR": patient_eeg["tbr"].values
             }).set_index("Session")
+            st.line_chart(chart_data)
 
-            st.line_chart(eeg_chart_data)
-
-            # Latest EEG reading (simulated)
             latest_faa = patient_eeg["faa"].iloc[-1]
             latest_tbr = patient_eeg["tbr"].iloc[-1]
 
-            # Clinician-friendly interpretation
             st.markdown("### EEG Interpretation (Latest Session)")
-
             if latest_faa < -0.2 and latest_tbr > 0.6:
                 st.warning("⚠️ EEG suggests **cognitive dysregulation** — recommend **reframing + focus games**.")
             elif latest_faa < -0.2:
@@ -148,61 +106,52 @@ elif page == "Patient Profile":
             else:
                 st.success("✅ EEG appears **within normal ranges**.")
 
-            # Optional chart: FAA vs TBR
             st.markdown("### FAA vs TBR Diagnostic Map")
-            import altair as alt
             chart = alt.Chart(patient_eeg).mark_circle(size=80).encode(
                 x=alt.X("faa", title="Frontal Alpha Asymmetry"),
                 y=alt.Y("tbr", title="Theta/Beta Ratio"),
-                tooltip=["faa", "tbr", "diagnosis"] if "diagnosis" in patient_eeg.columns else ["faa", "tbr"],
+                tooltip=["faa", "tbr", "diagnosis"],
                 color=alt.value("steelblue")
             ).interactive()
             st.altair_chart(chart, use_container_width=True)
 
         else:
-            st.warning("FAA and TBR columns not found in EEG dataset.")
+            st.warning("No EEG data found for this patient.")
 
     except FileNotFoundError:
-        st.error("EEG sample file not found. Please make sure 'rewire_clean_eeg_sample.csv' is in the same folder.")
+        st.error("EEG data file not found. Please ensure 'rewire_clean_eeg_sample.csv' is present.")
 
-    st.subheader("Biometric Trends (Last 30 Days)")
-    st.line_chart({
-        "HRV": [60, 58, 55, 52, 50],
-        "Resting HR": [72, 75, 78, 80, 82]
-    })
+    # -----------------------------
+    # 4. Homework Plan Builder
+    # -----------------------------
+    st.markdown("---")
+    st.subheader("Homework Plan Builder")
 
-    st.subheader("Homework Compliance")
-    st.metric("Game Completion Rate", "72%", "-10% from last month")
+    st.markdown("Select therapeutic games and weekly schedule:")
+    game_choices = game_options.get(diagnosis, [])
 
+    cognitive = st.selectbox("Cognitive Game", game_choices, index=0)
+    emotion = st.selectbox("Emotion Regulation Game", game_choices, index=1)
+    evening = st.selectbox("Evening Wind-down Game", game_choices, index=2)
 
-# -----------------------------
-# 4. Therapist: Plan Builder
-# -----------------------------
-elif page == "Homework Plan Builder":
-    st.title("AI-Suggested Homework Plan for RW-001")
+    freq1 = st.slider("Frequency for Cognitive Game", 1, 7, 5)
+    freq2 = st.slider("Frequency for Emotion Game", 1, 7, 3)
+    freq3 = st.slider("Frequency for Evening Game", 1, 7, 7)
 
-    st.markdown("#### Suggested Games")
-    cognitive = st.text_input("Cognitive Game", "Cognitive Reframing")
-    emotion = st.text_input("Emotion Game", "Emotion Labeling")
-    breathing = st.text_input("Evening Game", "Guided Breathing")
+    final_notes = st.text_area("Message to Patient", "Focus on consistency and practice this week.")
 
-    st.markdown("#### Schedule")
-    freq1 = st.slider("Cognitive Game Frequency", 1, 7, 5)
-    freq2 = st.slider("Emotion Game Frequency", 1, 7, 3)
-    freq3 = st.slider("Evening Game Frequency", 1, 7, 7)
-
-    st.markdown("#### Notes to Patient")
-    note = st.text_area("Include any notes or encouragement:", "Focus on consistent use before bed.")
-
-    if st.button("Send to Patient"):
-        st.success("Homework plan sent to patient app and email.")
-        st.write({
-            "Plan": {
+    if st.button("Save new EHR data & Send Homework Plan"):
+        st.success("✅ Encrypted EHR data saved & Homework Plan sent to patient via email and app.")
+        st.json({
+            "Patient": selected_name,
+            "Diagnosis": diagnosis,
+            "Risk Level": risk_level,
+            "Games": {
                 cognitive: f"{freq1}x/week",
                 emotion: f"{freq2}x/week",
-                breathing: f"{freq3}x/week"
+                evening: f"{freq3}x/week"
             },
-            "Note": note
+            "Message": final_notes
         })
 
 # -----------------------------
@@ -224,3 +173,28 @@ It supports future submission through the **510(k)** pathway using an FDA-cleare
 """)
 
 st.caption("Version 0.4 · Last updated: May 13, 2025")
+# -----------------------------
+# Sidebar: Evidence Base
+# -----------------------------
+with st.sidebar.expander("🧠 Evidence Base: Research Behind Rewire"):
+    st.markdown("""
+    Rewire DTx is grounded in peer-reviewed research on stress physiology, digital therapeutics, and neurocognitive rehabilitation:
+
+    - **Heart Rate Variability (HRV) & Stress:**
+      - Shaffer & Ginsberg (2017). *An Overview of HRV Metrics & Norms*. [Link](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5624990/)
+      - Kim et al. (2018). *Stress Monitoring Using HRV from Wearables*. [Link](https://pubmed.ncbi.nlm.nih.gov/29713438/)
+
+    - **Cognitive Restructuring & PTSD:**
+      - Resick et al. (2002). *Cognitive Processing Therapy for PTSD*. [Link](https://psycnet.apa.org/doi/10.1037/0022-006X.70.4.867)
+
+    - **Frontal Alpha Asymmetry & Mood:**
+      - Thibodeau et al. (2006). *Meta-analysis of EEG Asymmetry & Depression*. [Link](https://pubmed.ncbi.nlm.nih.gov/16953775/)
+
+    - **Digital Game-Based Therapies:**
+      - Denisova & Nordin (2020). *Game-Based Cognitive Training for Depression and Anxiety*. [Link](https://doi.org/10.3389/fpsyt.2020.00069)
+
+    - **Remote Monitoring & Behavioral Change:**
+      - Mohr et al. (2013). *Behavioral Intervention Technologies: Evidence Base & Roadmap*. [Link](https://pubmed.ncbi.nlm.nih.gov/23590427/)
+
+    These sources inform our clinical logic, scoring heuristics, and therapeutic interventions.
+    """)
