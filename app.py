@@ -53,7 +53,7 @@ if bio_df is None or bio_df.empty or eeg_df is None or eeg_df.empty:
 else:
     # ---------- BIOMETRIC SNAPSHOT ----------
     latest_bio = bio_df[bio_df["patient_id"] == pid].iloc[-1]
-    st.markdown("#### 📈 Latest Biometric Snapshot")
+    st.markdown("#### Latest Biometric Snapshot")
     col1, col2 = st.columns(2)
     col1.metric("Resting HR",   f"{latest_bio['resting_hr']} bpm")
     col2.metric("HRV",          f"{latest_bio['hrv']} ms")
