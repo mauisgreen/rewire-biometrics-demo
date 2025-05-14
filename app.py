@@ -191,7 +191,7 @@ st.subheader("📋 In-Clinic Session Notes")
 with st.form("session_form"):
     meds_taken = st.radio("Medication adherence reported?", ("Yes", "No", "NA"))
     therapist_note = st.text_area("Observations / triggers during session")
-    run_btn = st.form_submit_button("Run Assessment")
+    run_btn = st.form_submit_button("Run Risk Assessment")
 
 # -------------- 4. RISK ASSESSMENT --------------
 if run_btn and bio_df is not None:
@@ -351,14 +351,16 @@ if st.session_state.get(flag_key) and uid in st.session_state:
     d = st.session_state[uid]
 
     # build a dict of all three games
-    plan_dict = { game: f"{freq}×/wk"
-                  for game, freq in zip(d["games"], d["freqs"]) }
+    plan_dict = { 
+        game: f"{freq}×/wk"
+        for game, freq in zip(d["games"], d["freqs"]) 
+    }
 
-    # show it as JSON
-    st.json({
-        "Plan": plan_dict,
-        "Note": d["note"]
-    })
+    # render it as a markdown list
+    for game, freq in plan_dict.items():
+        st.markdown(f"- **{game}**: {freq}")
+
+    st.markdown(f"**Note:** {d['note']}")
 
     st.toast("Report sent and saved ✔️", icon="✅")             
 # -----------------------------
