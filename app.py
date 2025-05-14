@@ -287,9 +287,13 @@ if st.session_state.get("assessment_done"):
 
     # one form with three selects + sliders + text area
     with st.form(key=f"plan_form_{pid}", clear_on_submit=False):
-        g1 = st.selectbox("Cognitive Game",      choices, index=choices.index(defaults["games"][0]))
-        g2 = st.selectbox("Emotion Regulation Game", choices, index=choices.index(defaults["games"][1]))
-        g3 = st.selectbox("Evening Wind-down Game",   choices, index=choices.index(defaults["games"][2]))
+        idx1 = choices.index(defaults["games"][0]) if defaults["games"][0] in choices else 0
+        idx2 = choices.index(defaults["games"][1]) if defaults["games"][1] in choices else 0
+        idx3 = choices.index(defaults["games"][2]) if defaults["games"][2] in choices else 0
+
+        g1 = st.selectbox("Cognitive Game",           choices, index=idx1, key=f"g1_{pid}")
+        g2 = st.selectbox("Emotion Regulation Game",   choices, index=idx2, key=f"g2_{pid}")
+        g3 = st.selectbox("Evening Wind-down Game",    choices, index=idx3, key=f"g3_{pid}")
 
         f1 = st.slider(f"{g1} per week", 1, 7, defaults["freqs"][0])
         f2 = st.slider(f"{g2} per week", 1, 7, defaults["freqs"][1])
