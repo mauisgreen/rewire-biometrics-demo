@@ -349,15 +349,18 @@ flag_key = f"plan_submitted_{pid}"
 if st.session_state.get(flag_key) and uid in st.session_state:
     st.markdown("### Plan Sent to Patient and Saved in EHR")
     d = st.session_state[uid]
+
+    # build a dict of all three games
+    plan_dict = { game: f"{freq}×/wk"
+                  for game, freq in zip(d["games"], d["freqs"]) }
+
+    # show it as JSON
     st.json({
-        "Plan": {
-            d["games"][0]: f"{d['freqs'][0]}×/wk",
-            d["games"][1]: f"{d['freqs'][1]}×/wk",
-            d["games"][2]: f"{d['freqs'][2]}×/wk"
-        },
+        "Plan": plan_dict,
         "Note": d["note"]
     })
-    st.toast("Report sent and saved ✔️", icon="✅")   # Streamlit ≥1.22             
+
+    st.toast("Report sent and saved ✔️", icon="✅")             
 # -----------------------------
 # Sidebar: Evidence Base
 # -----------------------------
