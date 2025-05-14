@@ -334,15 +334,15 @@ if st.session_state.get("assessment_done"):
     # ---------- submit ----------
         sent = st.form_submit_button("💾 Save & Send Plan")
         
-            if sent:
-                flag_key = f"plan_submitted_{pid}"          # per-patient flag
-                st.session_state[flag_key] = True
-                st.session_state[uid] = dict(
-                    games=[g1, g2, g3],
-                    freqs=[f1, f2, f3],
-                    note=note
-                )
-                st.success("✅ Homework plan sent to patient app and email.")
+        if sent:
+            flag_key = f"plan_submitted_{pid}"          # per-patient flag
+            st.session_state[flag_key] = True
+            st.session_state[uid] = dict(
+                games=[g1, g2, g3],
+                freqs=[f1, f2, f3],
+                note=note
+            )
+            st.success("✅ Homework plan sent to patient app and email.")
     
 # ---------- confirmation panel ----------
 flag_key = f"plan_submitted_{pid}"
