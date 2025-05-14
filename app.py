@@ -161,7 +161,7 @@ if run_btn and bio_df is not None:
             delta       = latest_ns - baseline_ns
 
             # Bar colour: better = blue, worse = red, same = grey
-            colour = "royalblue" if delta < -0.3 else "orangered" if delta > 0.3 else "lightgrey"
+            colour = "seagreen" if delta < -0.3 else "orangered" if delta > 0.3 else "lightgrey"
 
             st.metric(label="Change vs. baseline",
                     value=f"{delta:+.2f} SD",
@@ -261,7 +261,7 @@ if run_btn and bio_df is not None:
                 d["games"][1]: f"{d['freqs'][1]}×/wk",
                 d["games"][2]: f"{d['freqs'][2]}×/wk"
             },
-            "Note": d["Note"]
+            "Note": d["note"]
         })
     if st.session_state.get("plan_submitted"):
         st.toast("Report sent and saved ✔️")          # Streamlit ≥1.22             
