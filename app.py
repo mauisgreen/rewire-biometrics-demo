@@ -50,13 +50,6 @@ if bio_df is not None and not bio_df.empty:
 else:
     st.info("Sync to view biometric data.")
 
-if eeg_df is not None and not eeg_df.empty:
-    pt_eeg = eeg_df[eeg_df["patient_id"] == pid].tail(4)
-    if not pt_eeg.empty:
-        st.markdown("#### 🧠 EEG Trend (FAA & TBR)")
-        trend = pt_eeg[["faa", "tbr"]].reset_index(drop=True)
-        trend.index = trend.index + 1
-        st.line_chart(trend)
 else:
     st.info("Sync to view EEG trend.")
 
@@ -160,7 +153,7 @@ if run_btn and bio_df is not None:
         st.json({
             "Patient": pname,
             "Diagnosis": pdiag,
-            "Risk":    risk_level,
+            "Risk":    level,
             "Games":   {g1: f"{f1}×/wk", g2: f"{f2}×/wk", g3: f"{f3}×/wk"},
             "Message": msg
         })
