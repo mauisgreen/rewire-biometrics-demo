@@ -216,13 +216,14 @@ if run_btn and bio_df is not None:
     with st.form(key=f"plan_form_{pid}", clear_on_submit=False):
         all_choices = game_options[pdiag][:]
 
-        g1 = st.selectbox("Cognitive Game", all_choices, index=all_choices.index(games[0]))
-        g2 = st.selectbox("Emotion Game",   all_choices, index=all_choices.index(games[1]))
-        g3 = st.selectbox("Evening Game",   all_choices, index=all_choices.index(games[2]))
+        # Safe indexes (fall back to 0 if suggestion not in list)
+        idx1 = all_choices.index(games[0]) if games[0] in all_choices else 0
+        idx2 = all_choices.index(games[1]) if games[1] in all_choices else 0
+        idx3 = all_choices.index(games[2]) if games[2] in all_choices else 0
 
-        f1 = st.slider(f"{g1} · sessions / week", 1, 7, freqs[0])
-        f2 = st.slider(f"{g2} · sessions / week", 1, 7, freqs[1])
-        f3 = st.slider(f"{g3} · sessions / week", 1, 7, freqs[2])
+        g1 = st.selectbox("Cognitive Game", all_choices, index=idx1)
+        g2 = st.selectbox("Emotion Game",   all_choices, index=idx2)
+        g3 = st.selectbox("Evening Game",   all_choices, index=idx3)
 
         note = st.text_area("Message to patient", value=note_default)
 
