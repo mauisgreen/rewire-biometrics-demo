@@ -9,7 +9,7 @@ from PIL import Image
 st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
 # ---------- Rewire logo ----------
 logo = Image.open("rewire_dtx_logo.jpg")
-st.image(logo, width=120)
+st.image(logo, width=80)
 # -------------- PATIENT & GAME DB --------------
 patients = {
     "RW-001": {"name": "Alex Rivera",  "diagnosis": "PTSD"},
@@ -23,7 +23,7 @@ game_options = {
 }
 
 # -------------- PAGE HEADER --------------
-st.title("🧠 Rewire Therapist Dashboard")
+st.title("Rewire Therapist Dashboard")
 pid = st.selectbox("Select Patient", list(patients.keys()))
 pname  = patients[pid]["name"]
 pdiag  = patients[pid]["diagnosis"]
