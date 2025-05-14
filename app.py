@@ -180,7 +180,7 @@ if run_btn and bio_df is not None:
     # -----------------------------
     if st.session_state.get("assessment_done"):
 
-    st.markdown("---")
+     st.markdown("---")
     st.subheader("Homework Plan Builder")
 
     # ---- initialise persistent defaults per patient ---------------
