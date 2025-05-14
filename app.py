@@ -183,9 +183,8 @@ if run_btn and bio_df is not None:
     # 6. Homework Plan Builder
     # -----------------------------
     if st.session_state.get("assessment_done"):
-
-    st.markdown("---")
-    st.subheader("Homework Plan Builder")
+        st.markdown("---")
+        st.subheader("Homework Plan Builder")
 
     # ---- initialise persistent defaults per patient ---------------
     uid = f"{pid}_defaults"
