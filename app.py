@@ -2,10 +2,14 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 from datetime import datetime
+from PIL import Image
+
 
 # -------------- CONFIG --------------
 st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
-
+# ---------- Rewire logo ----------
+logo = Image.open("rewire_dtx_logo.jpg")
+st.image(logo, width=120)
 # -------------- PATIENT & GAME DB --------------
 patients = {
     "RW-001": {"name": "Alex Rivera",  "diagnosis": "PTSD"},
@@ -214,9 +218,9 @@ if run_btn and bio_df is not None:
 
     # ---------- EDITABLE FORM ----------
     with st.form(key=f"plan_form_{pid}", clear_on_submit=False):
-        all_choices = game_options[pdiag][:]
+        # ---------- widgets ----------
+        all_choices = game_options[pdiag]
 
-        # Safe indexes (fall back to 0 if suggestion not in list)
         idx1 = all_choices.index(games[0]) if games[0] in all_choices else 0
         idx2 = all_choices.index(games[1]) if games[1] in all_choices else 0
         idx3 = all_choices.index(games[2]) if games[2] in all_choices else 0
@@ -225,22 +229,29 @@ if run_btn and bio_df is not None:
         g2 = st.selectbox("Emotion Game",   all_choices, index=idx2)
         g3 = st.selectbox("Evening Game",   all_choices, index=idx3)
 
+        f1 = st.slider(f"{g1} · sessions / week", 1, 7, freqs[0])
+        f2 = st.slider(f"{g2} · sessions / week", 1, 7, freqs[1])
+        f3 = st.slider(f"{g3} · sessions / week", 1, 7, freqs[2])
+
         note = st.text_area("Message to patient", value=note_default)
 
-        sent = st.form_submit_button("💾  Save & Send Plan")
+        # ---------- submit ----------
+        sent = st.form_submit_button("💾 Save & Send Plan")
 
-    # ---------- on submit ----------
-    if sent:
-        st.session_state.plan_submitted = True
-        st.session_state[uid] = dict(games=[g1, g2, g3], freqs=[f1, f2, f3], note=note)
-        st.success("✅ Homework plan sent to patient app and email.")
-        st.json({
-            "Patient":  pname,
-            "Diagnosis": pdiag,
-            "Risk":     level,
-            "Games":    {g1: f"{f1}×/wk", g2: f"{f2}×/wk", g3: f"{f3}×/wk"},
-            "Message":  note
-        })
+        if sent:
+            st.session_state.plan_submitted = True
+            st.session_state[uid] = dict(games=[g1, g2, g3], freqs=[f1, f2, f3], note=note)
+
+            st.success("✅ Homework plan sent to patient app and email.")
+            st.markdown("### Final Plan Sent")
+            st.write({
+                "Plan": {
+                    g1: f"{f1}×/wk",
+                    g2: f"{f2}×/wk",
+                    g3: f"{f3}×/wk"
+                },
+                "Note": note
+            })
 
     # ---------- confirmation panel ----------
     if st.session_state.get("plan_submitted"):
@@ -256,22 +267,11 @@ if run_btn and bio_df is not None:
         })
 
 # -----------------------------
-# Footer + Compliance
+# Footer
 # -----------------------------
 st.markdown("---")
 st.markdown("Questions or concerns? Contact **maureen@rewiredtx.com** or visit [rewiredtx.com](https://www.rewiredtx.com)")
 st.info("This tool is for demonstration purposes only and not yet approved for clinical use.")
-
-st.markdown("#### Regulatory Notice")
-st.markdown("""
-This prototype is designed in alignment with **FDA Class II medical device** guidelines under the **Software as a Medical Device (SaMD)** framework.
-
-It supports future submission through the **510(k)** pathway using an FDA-cleared predicate (NeuroFormance™), and adheres to:
-- IMDRF risk-based classification model  
-- HIPAA-compliant data privacy and handling  
-- Design History File (DHF) documentation standards  
-- AI/ML safety and clinical oversight best practices  
-""")
 
 st.caption("Version 0.4 · Last updated: May 13, 2025")
 # -----------------------------
@@ -299,3 +299,29 @@ with st.sidebar.expander("Research Behind Rewire"):
 
     These sources inform our clinical logic, scoring heuristics, and therapeutic interventions. If you have any questions about the evidence base or methodology, please reach out to our clinical team at **clinical@rewiredtx.com**.
     """)
+    # -----------------------------
+    # Sidebar: Regulatory Notice
+    # -----------------------------
+    with st.sidebar.expander("Regulatory Notice"):
+        st.markdown("""
+        **Intended Classification**: FDA **Class II** Software as a Medical Device (SaMD)  
+        **Planned Pathway**: 510(k) using NeuroFormance™ as predicate  
+        **Key Frameworks**  
+        • IMDRF risk-based classification  
+        • HIPAA / PHIPA data-privacy compliance  
+        • Design History File (DHF) & post-market surveillance  
+        • AI/ML transparency & human-in-the-loop oversight  
+        """)
+    # -----------------------------
+    # Sidebar: Contact Rewire
+    # -----------------------------
+    with st.sidebar.expander("Contact Rewire"):
+        st.markdown("""
+        **Email**  
+        [info@rewiredtx.com](mailto:info@rewiredtx.com)
+
+        **Office**  
+        #208 – 698 Seymour St  
+        Vancouver, BC  
+        Canada
+        """)
