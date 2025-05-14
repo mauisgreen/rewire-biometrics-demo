@@ -1,157 +1,120 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import altair as alt
+from datetime import datetime
 
-# -----------------------------
-# App Configuration
-# -----------------------------
+# -------------- CONFIG --------------
 st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
 
-# -----------------------------
-# Simulated Patient Database
-# -----------------------------
+# -------------- PATIENT & GAME DB --------------
 patients = {
-    "RW-001": {"name": "Warren Liu", "diagnosis": "PTSD"},
-    "RW-002": {"name": "Percival Ralston", "diagnosis": "ADHD"},
-    "RW-003": {"name": "Taylor Singh", "diagnosis": "MDD"}
+    "RW-001": {"name": "Alex Rivera",  "diagnosis": "PTSD"},
+    "RW-002": {"name": "Jamie Chen",   "diagnosis": "ADHD"},
+    "RW-003": {"name": "Taylor Singh", "diagnosis": "MDD"},
 }
-
 game_options = {
-    "PTSD": ["Cognitive Reframing - ReThink", "Stress Inoculation - Wave Rider", "Guided Breathing", "Emotion Labeling - Mood Match"],
-    "ADHD": ["Focus Trainer - ", "Impulse Control - Impulse Ninja", "Breath Pacer - Breathe the Beat", "Visual Attention - Colour Match"],
-    "MDD": ["Optimism Booster - Mood Bloom", "Cognitive Flexibility - ReRoute", "Mood Tracking - Feel Journal ", "Evening Wind-down - MoonMode"]
+    "PTSD": ["Cognitive Reframing", "Stress Inoculation", "Guided Breathing", "Emotion Labeling"],
+    "ADHD": ["Focus Trainer", "Impulse Control Game", "Breath Pacer", "Visual Attention"],
+    "MDD":  ["Optimism Booster", "Cognitive Flexibility", "Mood Tracking", "Evening Wind-down"],
 }
 
-# -----------------------------
-# Page Title and Patient Selector
-# -----------------------------
-st.title("Rewire Therapist Dashboard")
+# -------------- PAGE HEADER --------------
+st.title("🧠 Rewire Therapist Dashboard")
+pid = st.selectbox("Select Patient", list(patients.keys()))
+pname  = patients[pid]["name"]
+pdiag  = patients[pid]["diagnosis"]
+st.markdown(f"### {pname} ({pid})   |   **Diagnosis:** {pdiag}")
 
-selected_id = st.selectbox("Select a patient", options=list(patients.keys()))
-selected_name = patients[selected_id]["name"]
-diagnosis = patients[selected_id]["diagnosis"]
-st.markdown(f"### Patient: **{selected_name}** ({selected_id})")
-st.markdown(f"**Diagnosis:** {diagnosis}")
-
-# -----------------------------
-# 1. In-Clinic Session Entry
-# -----------------------------
-st.subheader("📋 Record In-Clinic Session")
-
-with st.form(key="session_form"):
-    sleep = st.number_input("Sleep Duration (hrs)", min_value=0.0, max_value=12.0, step=0.1, value=6.5)
-    activity = st.number_input("Physical Activity (mins)", min_value=0, max_value=180, step=5, value=45)
-    heart_rate = st.number_input("Resting Heart Rate (bpm)", min_value=40, max_value=110, value=78)
-    hrv = st.number_input("Heart Rate Variability (HRV)", min_value=10, max_value=120, value=50)
-    meds = st.radio("Took medication as prescribed?", ("Yes", "No"))
-    notes = st.text_area("Therapist Notes (optional)")
-    submit_button = st.form_submit_button("Run Stress Risk Assessment")
-
-# -----------------------------
-# 2. Stress Risk Assessment
-# -----------------------------
-if submit_button:
-    score = 0
-    if sleep < 6: score += 25
-    if activity < 30: score += 20
-    if heart_rate > 85: score += 20
-    if hrv < 50: score += 20
-    if meds == "No": score += 15
-
-    risk_level = "Low" if score <= 30 else "Moderate" if score <= 60 else "High"
-    color = "🟢" if risk_level == "Low" else "🟡" if risk_level == "Moderate" else "🔴"
-
-    st.subheader(f"{color} Stress Risk Level: {risk_level}")
-    st.markdown(f"Score: **{score}/100**")
-    st.markdown("#### Why this score?")
-    if sleep < 6:
-        st.markdown("- Sleep below 6 hours may elevate stress reactivity.")
-    if activity < 30:
-        st.markdown("- Less than 30 mins of activity linked to poor mood regulation.")
-    if heart_rate > 85:
-        st.markdown("- Resting HR greater than 85bpm may indicate autonomic stress.")
-    if hrv < 50:
-        st.markdown("- HRV lower than 50 correlates with reduced emotional resilience.")
-    if meds == "No":
-        st.markdown("- Medication non-adherence may disrupt stability.")
-
-    # -----------------------------
-    # 3. EEG Snapshot with Interpretation
-    # -----------------------------
-    st.markdown("---")
-    st.subheader("🧠 EEG Summary")
+# -------------- 1. SYNC LATEST DATA --------------
+if st.button("🔄 Sync Latest Data"):
+    # ───── Load biometric & EEG CSVs (replace with S3 / API fetch later) ─────
     try:
-        df = pd.read_csv("rewire_clean_eeg_sample.csv")
-        patient_eeg = df[df["patient_id"] == selected_id].tail(4)
-
-        if not patient_eeg.empty:
-            chart_data = pd.DataFrame({
-                "Session": list(range(1, len(patient_eeg) + 1)),
-                "FAA": patient_eeg["faa"].values,
-                "TBR": patient_eeg["tbr"].values
-            }).set_index("Session")
-            st.line_chart(chart_data)
-
-            latest_faa = patient_eeg["faa"].iloc[-1]
-            latest_tbr = patient_eeg["tbr"].iloc[-1]
-
-            st.markdown("### EEG Interpretation (Latest Session)")
-            if latest_faa < -0.2 and latest_tbr > 0.6:
-                st.warning("⚠️ EEG suggests **cognitive dysregulation** — recommend **reframing + focus games**.")
-            elif latest_faa < -0.2:
-                st.info("⬇️ Frontal asymmetry suggests **low motivation** or **mood disturbance**.")
-            elif latest_tbr > 0.6:
-                st.info("↑ Elevated TBR suggests **attention or focus difficulties**.")
-            else:
-                st.success("✅ EEG appears **within normal ranges**.")
-
-            st.markdown("### FAA vs TBR Diagnostic Map")
-            chart = alt.Chart(patient_eeg).mark_circle(size=80).encode(
-                x=alt.X("faa", title="Frontal Alpha Asymmetry"),
-                y=alt.Y("tbr", title="Theta/Beta Ratio"),
-                tooltip=["faa", "tbr", "diagnosis"],
-                color=alt.value("steelblue")
-            ).interactive()
-            st.altair_chart(chart, use_container_width=True)
-
-        else:
-            st.warning("No EEG data found for this patient.")
-
+        bio_df = pd.read_csv("latest_biometric.csv")      # HR, HRV, sleep… (auto-uploaded)
+        eeg_df = pd.read_csv("rewire_clean_eeg_sample.csv")
+        st.success("Latest biometric and EEG data synced.")
+        st.session_state["bio_df"] = bio_df
+        st.session_state["eeg_df"] = eeg_df
     except FileNotFoundError:
-        st.error("EEG data file not found. Please ensure 'rewire_clean_eeg_sample.csv' is present.")
+        st.error("Auto-upload files not found. Ensure `latest_biometric.csv` & EEG file exist.")
 
-    # -----------------------------
-    # 4. Homework Plan Builder
-    # -----------------------------
+# ------------ 2. SHOW READ-ONLY METRICS -------------
+bio_df = st.session_state.get("bio_df")
+eeg_df = st.session_state.get("eeg_df")
+
+if bio_df is not None and not bio_df.empty:
+    latest_bio = bio_df[bio_df["patient_id"] == pid].iloc[-1]
+    st.markdown("#### 📈 Latest Biometric Snapshot")
+    col1, col2 = st.columns(2)
+    col1.metric("Resting HR",   f"{latest_bio['resting_hr']} bpm")
+    col2.metric("HRV",          f"{latest_bio['hrv']} ms")
+else:
+    st.info("Sync to view biometric data.")
+
+if eeg_df is not None and not eeg_df.empty:
+    pt_eeg = eeg_df[eeg_df["patient_id"] == pid].tail(4)
+    if not pt_eeg.empty:
+        st.markdown("#### 🧠 EEG Trend (FAA & TBR)")
+        trend = pt_eeg[["faa", "tbr"]].reset_index(drop=True)
+        trend.index = trend.index + 1
+        st.line_chart(trend)
+else:
+    st.info("Sync to view EEG trend.")
+
+# -------------- 3. IN-CLINIC SESSION INPUT --------------
+st.markdown("---")
+st.subheader("📋 In-Clinic Session Notes")
+with st.form("session_form"):
+    meds_taken = st.radio("Medication given in clinic?", ("Yes", "No"))
+    therapist_note = st.text_area("Observations / triggers")
+    run_btn = st.form_submit_button("Run Assessment")
+
+# -------------- 4. RISK ASSESSMENT --------------
+if run_btn and bio_df is not None:
+    latest = latest_bio  # combine auto metrics with therapist field
+    score = 0
+    if latest["sleep"] < 6:        score += 25
+    if latest["activity"] < 30:    score += 20
+    if latest["resting_hr"] > 85:  score += 20
+    if latest["hrv"] < 50:         score += 20
+    if meds_taken == "No":         score += 15
+    level = ("Low","Moderate","High")[(score>30)+(score>60)]
+    icon  = ("🟢","🟡","🔴")[(score>30)+(score>60)]
+    st.subheader(f"{icon} Stress Risk: **{level}**   · Score {score}/100")
+
+    # ------------ 5. EEG INTERPRETATION -------------
+    if eeg_df is not None and not pt_eeg.empty:
+        ffa = pt_eeg["faa"].iloc[-1]; tbr = pt_eeg["tbr"].iloc[-1]
+        st.markdown("##### EEG Interpretation")
+        if ffa < -0.2 and tbr > 0.6:
+            st.warning("⚠️ Cognitive dysregulation — consider reframing & focus games.")
+        elif ffa < -0.2:
+            st.info("⬇️ Right-biased FAA — mood / motivation low.")
+        elif tbr > 0.6:
+            st.info("↑ High TBR — attention drift detected.")
+        else:
+            st.success("✅ EEG within expected range.")
+
+    # ------------- 6. HOMEWORK PLAN BUILDER ----------
     st.markdown("---")
-    st.subheader("Homework Plan Builder")
+    st.subheader("Homework Plan (editable)")
+    opts = game_options[pdiag]
+    g1 = st.selectbox("Cognitive Game", opts, index=0, key="g1")
+    g2 = st.selectbox("Emotion Game",   opts, index=1, key="g2")
+    g3 = st.selectbox("Evening Game",   opts, index=2, key="g3")
+    f1 = st.slider(f"{g1} per week", 1, 7, 5, key="f1")
+    f2 = st.slider(f"{g2} per week", 1, 7, 3, key="f2")
+    f3 = st.slider(f"{g3} per week", 1, 7, 7, key="f3")
+    msg = st.text_area("Message to patient", "Focus on consistency this week.")
 
-    st.markdown("Select therapeutic games and weekly schedule:")
-    game_choices = game_options.get(diagnosis, [])
-
-    cognitive = st.selectbox("Cognitive Game", game_choices, index=0)
-    emotion = st.selectbox("Emotion Regulation Game", game_choices, index=1)
-    evening = st.selectbox("Evening Wind-down Game", game_choices, index=2)
-
-    freq1 = st.slider("Frequency for Cognitive Game", 1, 7, 5)
-    freq2 = st.slider("Frequency for Emotion Game", 1, 7, 3)
-    freq3 = st.slider("Frequency for Evening Game", 1, 7, 7)
-
-    final_notes = st.text_area("Message to Patient", "Focus on consistency and practice this week.")
-
-    if st.button("Save new EHR data & Send Homework Plan"):
-        st.success("✅ Encrypted EHR data saved & Homework Plan sent to patient via email and app.")
+    if st.button("Save & Send Plan"):
+        # Here you’d POST to an email / app API; we just echo JSON
+        st.success("Plan saved & sent.")
         st.json({
-            "Patient": selected_name,
-            "Diagnosis": diagnosis,
-            "Risk Level": risk_level,
-            "Games": {
-                cognitive: f"{freq1}x/week",
-                emotion: f"{freq2}x/week",
-                evening: f"{freq3}x/week"
-            },
-            "Message": final_notes
+            "timestamp": datetime.now().isoformat(timespec='seconds'),
+            "patient": pid,
+            "risk": level,
+            "games": {g1: f"{f1}×/wk", g2: f"{f2}×/wk", g3: f"{f3}×/wk"},
+            "note": msg
         })
 
 # -----------------------------
