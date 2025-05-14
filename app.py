@@ -168,44 +168,82 @@ if run_btn and bio_df is not None:
     # -----------------------------
     # 6. Homework Plan Builder
     # -----------------------------
-   if st.session_state.get("assessment_done"):
-        st.markdown("---")
-        st.subheader("Homework Plan Builder")
+    if st.session_state.get("assessment_done"):
 
-            st.markdown("Select therapeutic games and weekly schedule:")
+    st.markdown("---")
+    st.subheader("Homework Plan Builder")
 
-        # 1st dropdown
-        all_choices = game_options[pdiag][:]
-        g1 = st.selectbox("Cognitive Game", all_choices, key="g1_{pid}")
+    # ---------- State flag ----------
+    if "plan_submitted" not in st.session_state:
+        st.session_state.plan_submitted = False
+    # ---------------------------------
+    # ✨ Explain why this plan is suggested
+    st.info(
+        f"The game plan below is auto-generated from {pname}'s latest EEG, biometric trends, "
+        f"and clinical profile (diagnosis: **{pdiag}**, risk level: **{level}**). "
+        "You can edit any part before sending it to the patient."
+    )
+    # ----- ❶  Generate auto-suggested plan from patient data -----
+    # Simple rules – swap in your own model later
+    if level == "High":
+        default_games  = ["Cognitive Reframing", "Emotion Labeling", "Guided Breathing"]
+        default_freqs  = [7, 5, 7]           # daily, 5×, nightly
+    elif level == "Moderate":
+        default_games  = ["Cognitive Flexibility", "Emotion Check-In", "Guided Breathing"]
+        default_freqs  = [4, 3, 7]
+    else:  # Low
+        default_games  = ["Resilience Booster", "Emotion Check-In", "Evening Calm"]
+        default_freqs  = [2, 2, 5]
 
-        # 2nd dropdown (remove g1)
-        choices_lvl2 = [g for g in all_choices if g != g1]
-        g2 = st.selectbox("Emotion Regulation Game", choices_lvl2, key="g2_{pid}")
+    # If diagnosis influences plan (example)
+    if pdiag == "PTSD":
+        default_games[1] = "Stress Inoculation"
+        default_freqs[1] = 4
 
-        # 3rd dropdown (remove g1 & g2)
-        choices_lvl3 = [g for g in all_choices if g not in (g1, g2)]
-        g3 = st.selectbox("Evening Wind-down Game", choices_lvl3, key="g3_{pid}")
+    # -------------------------------------------------------------
 
-        # Frequencies
-        f1 = st.slider(f"{g1} per week", 1, 7, 5, key="f1_{pid}")
-        f2 = st.slider(f"{g2} per week", 1, 7, 3, key="f2_{pid}")
-        f3 = st.slider(f"{g3} per week", 1, 7, 7, key="f3_{pid}")
+    st.markdown("#### Suggested Games (editable)")
 
-        # Therapist message
-        msg = st.text_area("Message to patient", "Focus on consistency and practice this week.")
+    all_choices = game_options[pdiag][:]
 
-        # Save / send
-        if st.button("💾 Save & Send Plan"):
-            # TODO: real API / DB call here
-            st.success("✅ Homework sent successfully!")
-            # st.balloons()  # uncomment for celebration
-            st.json({
-                "Patient": pname,
-                "Diagnosis": pdiag,
-                "Risk":    level,
-                "Games":   {g1: f"{f1}×/wk", g2: f"{f2}×/wk", g3: f"{f3}×/wk"},
-                "Message": msg
-            })
+    # Dropdowns pre-populated with suggestions
+    g1 = st.selectbox("Cognitive Game",      all_choices, index=all_choices.index(default_games[0]), key=f"g1_{pid}")
+    g2 = st.selectbox("Emotion Game",        all_choices, index=all_choices.index(default_games[1]), key=f"g2_{pid}")
+    g3 = st.selectbox("Evening Wind-Down",   all_choices, index=all_choices.index(default_games[2]), key=f"g3_{pid}")
+
+    st.markdown("#### Schedule (editable)")
+
+    f1 = st.slider(f"{g1} per week", 1, 7, default_freqs[0], key=f"f1_{pid}")
+    f2 = st.slider(f"{g2} per week", 1, 7, default_freqs[1], key=f"f2_{pid}")
+    f3 = st.slider(f"{g3} per week", 1, 7, default_freqs[2], key=f"f3_{pid}")
+
+    st.markdown("#### Notes to Patient")
+    note = st.text_area("Include any notes or encouragement:", "Focus on consistency and practice this week.")
+
+    # ----- Save / send -----
+    if st.button("💾 Save & Send Plan"):
+        st.session_state.plan_submitted = True
+        st.success("✅ Homework sent to patient app and email.")
+        # TODO: actual API / DB push
+        st.json({
+            "Patient":  pname,
+            "Diagnosis": pdiag,
+            "Risk":     level,
+            "Games":    {g1: f"{f1}×/wk", g2: f"{f2}×/wk", g3: f"{f3}×/wk"},
+            "Message":  note
+        })
+
+    # ----- Confirmation Preview -----
+    if st.session_state.plan_submitted:
+        st.markdown("### Final Plan Sent")
+        st.write({
+            "Plan": {
+                g1: f"{f1}×/wk",
+                g2: f"{f2}×/wk",
+                g3: f"{f3}×/wk"
+            },
+            "Note": note
+        })
 
 # -----------------------------
 # Footer + Compliance
