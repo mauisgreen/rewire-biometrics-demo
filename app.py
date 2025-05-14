@@ -242,13 +242,15 @@ if run_btn and bio_df is not None:
 
         # ---------- submit ----------
         sent = st.form_submit_button("💾 Save & Send Plan")
-
+        
         if sent:
+            # save to session
             st.session_state.plan_submitted = True
-            st.session_state[uid] = dict(games=[g1, g2, g3], freqs=[f1, f2, f3], note=note)
-
+            st.session_state[uid] = dict(games=[g1, g2, g3],
+                                         freqs=[f1, f2, f3],
+                                         note=note)
+            # immediate confirmation inside the form
             st.success("✅ Homework plan sent to patient app and email.")
-
     # ---------- confirmation panel ----------
     if st.session_state.get("plan_submitted"):
         st.markdown("### Plan Sent to Patient and Saved in EHR")
