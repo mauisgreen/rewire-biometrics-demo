@@ -8,22 +8,25 @@ from PIL import Image
 st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
 
 # ---------- Rewire brand palette ----------
-REWIRE_PRIMARY   = "#00BFA5"   # teal-green
-REWIRE_ACCENT    = "#FF6F61"   # coral
+REWIRE_PRIMARY   = "#001E5A"   # dark navy
+REWIRE_ACCENT    = "#3E5EE4"   # hover / accent blue
 REWIRE_BG        = "#F5F7FA"   # light grey
 REWIRE_CARD_BG   = "#FFFFFF"
 
 st.markdown(
 f"""
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
 /* ---------- global ----------- */
 body, .main {{
     background-color:{REWIRE_BG};
-    font-family: "Helvetica", sans-serif;
+    font-family: "Inter", sans-serif;     /* ← now Inter */
 }}
+
 /* ---------- cards / containers ----------- */
 .block-container {{
-    padding-top: 1rem;
+    padding-top: 2rem;
 }}
 div[data-testid="stForm"] {{
     background:{REWIRE_CARD_BG};
@@ -327,18 +330,18 @@ if run_btn and bio_df is not None:
                                          note=note)
             # immediate confirmation inside the form
             st.success("✅ Homework plan sent to patient app and email.")
-    # ---------- confirmation panel ----------
-    if st.session_state.get("plan_submitted"):
-        st.markdown("### Plan Sent to Patient and Saved in EHR")
-        d = st.session_state[uid]
-        st.write({
-            "Plan": {
-                d["games"][0]: f"{d['freqs'][0]}×/wk",
-                d["games"][1]: f"{d['freqs'][1]}×/wk",
-                d["games"][2]: f"{d['freqs'][2]}×/wk"
-            },
-            "Note": d["note"]
-        })
+# ---------- confirmation panel ----------
+if st.session_state.get("plan_submitted"):
+    st.markdown("### Plan Sent to Patient and Saved in EHR")
+    d = st.session_state[uid]
+    st.write({
+        "Plan": {
+            d["games"][0]: f"{d['freqs'][0]}×/wk",
+            d["games"][1]: f"{d['freqs'][1]}×/wk",
+            d["games"][2]: f"{d['freqs'][2]}×/wk"
+        },
+        "Note": d["note"]
+    })
     if st.session_state.get("plan_submitted"):
         st.toast("Report sent and saved ✔️")          # Streamlit ≥1.22             
 # -----------------------------
