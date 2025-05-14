@@ -204,6 +204,7 @@ if run_btn and bio_df is not None:
     if meds_taken == "No":         score += 15
     level = ("Low","Moderate","High")[(score>30)+(score>60)]
     icon  = ("🟢","🟡","🔴")[(score>30)+(score>60)]
+    st.session_state[f"risk_level_{pid}"] = level
     st.subheader(f"{icon} Stress Risk: **{level}**   · Score {score}/100")
     # ---- mark that this patient has a completed assessment ----
     st.session_state["assessment_done"] = True
@@ -254,6 +255,10 @@ if run_btn and bio_df is not None:
 # 6. Homework Plan Builder
 # -----------------------------
 if st.session_state.get("assessment_done"):
+    # ← **Fetch the persisted risk level here**
+    risk_key = f"risk_level_{pid}"
+    level    = st.session_state.get(risk_key, "Low")
+    
     st.markdown("---")
     st.subheader("Homework Plan Builder")
 
