@@ -4,25 +4,68 @@ import altair as alt
 from datetime import datetime
 from PIL import Image
 
-streamlit.errors.StreamlitDuplicateElementId: This app has encountered an error. The original error message is redacted to prevent data leaks. Full error details have been recorded in the logs (if you're on Streamlit Cloud, click on 'Manage app' in the lower right of your app).
+# ---------- Rewire brand palette ----------
+REWIRE_PRIMARY   = "#00BFA5"   # teal-green
+REWIRE_ACCENT    = "#FF6F61"   # coral
+REWIRE_BG        = "#F5F7FA"   # light grey
+REWIRE_CARD_BG   = "#FFFFFF"
 
-Traceback:
-File "/mount/src/rewire-biometrics-demo/app.py", line 238, in <module>
-    f2 = st.slider(f"{g2} · sessions / week", 1, 7, freqs[1])
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-File "/home/adminuser/venv/lib/python3.12/site-packages/streamlit/runtime/metrics_util.py", line 444, in wrapped_func
-    result = non_optional_func(*args, **kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-File "/home/adminuser/venv/lib/python3.12/site-packages/streamlit/elements/widgets/slider.py", line 531, in slider
-    return self._slider(
-           ^^^^^^^^^^^^^
-File "/home/adminuser/venv/lib/python3.12/site-packages/streamlit/elements/widgets/slider.py", line 576, in _slider
-    element_id = compute_and_register_element_id(
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-File "/home/adminuser/venv/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 239, in compute_and_register_element_id
-    _register_element_id(ctx, element_type, element_id)
-File "/home/adminuser/venv/lib/python3.12/site-packages/streamlit/elements/lib/utils.py", line 145, in _register_element_id
-    raise StreamlitDuplicateElementId(element_type)
+st.markdown(
+f"""
+<style>
+/* ---------- global ----------- */
+body, .main {{
+    background-color:{REWIRE_BG};
+    font-family: "Helvetica", sans-serif;
+}}
+/* ---------- cards / containers ----------- */
+.block-container {{
+    padding-top: 1rem;
+}}
+div[data-testid="stForm"] {{
+    background:{REWIRE_CARD_BG};
+    padding:1.2rem 1.5rem;
+    border-radius:12px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.08);
+}}
+/* ---------- headers ----------- */
+h2, h3, h4 {{
+    color:{REWIRE_PRIMARY};
+    font-weight:600;
+}}
+/* ---------- sliders ----------- */
+.css-14pt78w .stSlider > div[data-baseweb="slider"] > div {{
+    background:{REWIRE_PRIMARY};
+}}
+/* ---------- buttons ----------- */
+div.stButton > button:first-child {{
+    background:{REWIRE_PRIMARY};
+    color:#fff;
+    border:none;
+    border-radius:8px;
+}}
+div.stButton > button:first-child:hover {{
+    background:{REWIRE_ACCENT};
+    color:#fff;
+}}
+/* ---------- success / info boxes ----------- */
+.stAlert>div[data-testid="stMarkdownContainer"] {{
+    font-weight:500;
+}}
+.stAlert-success {{
+    background:#E0F8F4;
+    border-left:6px solid {REWIRE_PRIMARY};
+    color:#0f7768;
+}}
+.stToast {{
+    background:{REWIRE_PRIMARY} !important;
+    color:#fff !important;
+}}
+</style>
+""",
+unsafe_allow_html=True
+)
+
 
 # -------------- CONFIG --------------
 st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
