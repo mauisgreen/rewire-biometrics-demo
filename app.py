@@ -24,7 +24,10 @@ pid = st.selectbox("Select Patient", list(patients.keys()))
 pname  = patients[pid]["name"]
 pdiag  = patients[pid]["diagnosis"]
 st.markdown(f"### {pname} ({pid})   |   **Diagnosis:** {pdiag}")
-
+# ---- reset homework visibility when the therapist switches patients ----
+if st.session_state.get("last_pid") != pid:
+    st.session_state["assessment_done"] = False      # hide homework until new assessment
+    st.session_state["last_pid"] = pid
 # -------------- 1. SYNC LATEST DATA --------------
 if st.button("🔄 Sync Latest Data"):
     # ───── Load biometric & EEG CSVs (replace with S3 / API fetch later) ─────
@@ -61,9 +64,16 @@ else:
     st.line_chart(bio_trend)
 
     # Simple textual cue
-    delta_hrv = bio_trend["hrv"].iloc[-1] - bio_trend["hrv"].iloc[0]
-    hrv_msg = "improved 💙" if delta_hrv > 5 else "declined 🔻" if delta_hrv < -5 else "stable ⚪️"
-    st.caption(f"HRV has {hrv_msg} over the last 30 days.")
+    delta_hrv = int(bio_trend["hrv"].iloc[-1] - bio_trend["hrv"].iloc[0])
+
+    if delta_hrv > 5:
+        hrv_sentence = f"HRV improved by {delta_hrv} ms 💙 over the last {len(bio_trend)} days."
+    elif delta_hrv < -5:
+        hrv_sentence = f"HRV declined by {abs(delta_hrv)} ms 🔻 over the last {len(bio_trend)} days."
+    else:
+        hrv_sentence = f"HRV remained within ±5 ms ⚪️ (change: {delta_hrv} ms) during the last {len(bio_trend)} days."
+
+    st.caption(hrv_sentence)
 
     # ---------- EEG TREND + EXPLANATION ----------
     st.markdown("#### 🧠 EEG Trend (FAA & TBR, last 4 sessions)")
@@ -110,7 +120,8 @@ if run_btn and bio_df is not None:
     level = ("Low","Moderate","High")[(score>30)+(score>60)]
     icon  = ("🟢","🟡","🔴")[(score>30)+(score>60)]
     st.subheader(f"{icon} Stress Risk: **{level}**   · Score {score}/100")
-
+    # ---- mark that this patient has a completed assessment ----
+    st.session_state["assessment_done"] = True
     # ---------------- EEG section ----------------
     st.markdown("#### 🧠 Neuro-score Progress")
 
@@ -157,43 +168,44 @@ if run_btn and bio_df is not None:
     # -----------------------------
     # 6. Homework Plan Builder
     # -----------------------------
-    st.markdown("---")
-    st.subheader("Homework Plan Builder")
+   if st.session_state.get("assessment_done"):
+        st.markdown("---")
+        st.subheader("Homework Plan Builder")
 
-    st.markdown("Select therapeutic games and weekly schedule:")
+            st.markdown("Select therapeutic games and weekly schedule:")
 
-    # 1st dropdown
-    all_choices = game_options[pdiag][:]
-    g1 = st.selectbox("Cognitive Game", all_choices, key="g1")
+        # 1st dropdown
+        all_choices = game_options[pdiag][:]
+        g1 = st.selectbox("Cognitive Game", all_choices, key="g1_{pid}")
 
-    # 2nd dropdown (remove g1)
-    choices_lvl2 = [g for g in all_choices if g != g1]
-    g2 = st.selectbox("Emotion Regulation Game", choices_lvl2, key="g2")
+        # 2nd dropdown (remove g1)
+        choices_lvl2 = [g for g in all_choices if g != g1]
+        g2 = st.selectbox("Emotion Regulation Game", choices_lvl2, key="g2_{pid}")
 
-    # 3rd dropdown (remove g1 & g2)
-    choices_lvl3 = [g for g in all_choices if g not in (g1, g2)]
-    g3 = st.selectbox("Evening Wind-down Game", choices_lvl3, key="g3")
+        # 3rd dropdown (remove g1 & g2)
+        choices_lvl3 = [g for g in all_choices if g not in (g1, g2)]
+        g3 = st.selectbox("Evening Wind-down Game", choices_lvl3, key="g3_{pid}")
 
-    # Frequencies
-    f1 = st.slider(f"{g1} per week", 1, 7, 5, key="f1")
-    f2 = st.slider(f"{g2} per week", 1, 7, 3, key="f2")
-    f3 = st.slider(f"{g3} per week", 1, 7, 7, key="f3")
+        # Frequencies
+        f1 = st.slider(f"{g1} per week", 1, 7, 5, key="f1_{pid}")
+        f2 = st.slider(f"{g2} per week", 1, 7, 3, key="f2_{pid}")
+        f3 = st.slider(f"{g3} per week", 1, 7, 7, key="f3_{pid}")
 
-    # Therapist message
-    msg = st.text_area("Message to patient", "Focus on consistency and practice this week.")
+        # Therapist message
+        msg = st.text_area("Message to patient", "Focus on consistency and practice this week.")
 
-    # Save / send
-    if st.button("💾 Save & Send Plan"):
-        # TODO: real API / DB call here
-        st.success("✅ Homework sent successfully!")
-        # st.balloons()  # uncomment for celebration
-        st.json({
-            "Patient": pname,
-            "Diagnosis": pdiag,
-            "Risk":    level,
-            "Games":   {g1: f"{f1}×/wk", g2: f"{f2}×/wk", g3: f"{f3}×/wk"},
-            "Message": msg
-        })
+        # Save / send
+        if st.button("💾 Save & Send Plan"):
+            # TODO: real API / DB call here
+            st.success("✅ Homework sent successfully!")
+            # st.balloons()  # uncomment for celebration
+            st.json({
+                "Patient": pname,
+                "Diagnosis": pdiag,
+                "Risk":    level,
+                "Games":   {g1: f"{f1}×/wk", g2: f"{f2}×/wk", g3: f"{f3}×/wk"},
+                "Message": msg
+            })
 
 # -----------------------------
 # Footer + Compliance
