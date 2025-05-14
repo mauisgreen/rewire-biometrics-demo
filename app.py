@@ -278,7 +278,6 @@ if st.session_state.get("assessment_done"):
 
         if pdiag == "PTSD":
             games[1] = "Stress Inoculation"; freqs[1] = 4
-
         st.session_state[uid] = dict(games=games, freqs=freqs, note="Focus on consistency this week.")
 
     # Persisted defaults
@@ -297,17 +296,17 @@ if st.session_state.get("assessment_done"):
         all_choices = game_options[pdiag]
 
         idx1 = all_choices.index(games[0]) if games[0] in all_choices else 0
-        g1   = st.selectbox("Cognitive Game", all_choices, index=idx1)
+        g1   = st.selectbox("Cognitive Game", all_choices, index=idx1, key=f"g1_{pid}")
         choices2 = [c for c in all_choices if c != g1]
         idx2     = choices2.index(games[1]) if games[1] in choices2 else 0
-        g2       = st.selectbox("Emotion Game", choices2, index=idx2)
+        g2       = st.selectbox("Emotion Game", choices2, index=idx2, key=f"g2_{pid}")
         choices3 = [c for c in all_choices if c not in (g1, g2)]
         idx3     = choices3.index(games[2]) if games[2] in choices3 else 0
-        g3       = st.selectbox("Evening Game", choices3, index=idx3)
+        g3       = st.selectbox("Evening Game", choices3, index=idx3, key=f"g3_{pid}")
         
-        g1 = st.selectbox("Cognitive Game", all_choices, index=idx1)
-        g2 = st.selectbox("Emotion Game",   all_choices, index=idx2)
-        g3 = st.selectbox("Evening Game",   all_choices, index=idx3)
+        g1 = st.selectbox("Cognitive Game", all_choices, index=idx1, key=f"f1_{pid}")
+        g2 = st.selectbox("Emotion Game",   all_choices, index=idx2, key=f"f2_{pid}")
+        g3 = st.selectbox("Evening Game",   all_choices, index=idx3, key=f"f3_{pid}")
 
         f1 = st.slider(
             f"{g1} · sessions / week",
@@ -333,24 +332,24 @@ if st.session_state.get("assessment_done"):
             key=f"note_{pid}"
         )
     # ---------- submit ----------
-    sent = st.form_submit_button("💾 Save & Send Plan")
+        sent = st.form_submit_button("💾 Save & Send Plan")
         
-    if sent:
-        flag_key = f"plan_submitted_{pid}"          # per-patient flag
-        st.session_state[flag_key] = True
-        st.session_state[uid] = dict(
-            games=[g1, g2, g3],
-            freqs=[f1, f2, f3],
-            note=note
-        )
-        st.success("✅ Homework plan sent to patient app and email.")
+            if sent:
+                flag_key = f"plan_submitted_{pid}"          # per-patient flag
+                st.session_state[flag_key] = True
+                st.session_state[uid] = dict(
+                    games=[g1, g2, g3],
+                    freqs=[f1, f2, f3],
+                    note=note
+                )
+                st.success("✅ Homework plan sent to patient app and email.")
     
 # ---------- confirmation panel ----------
 flag_key = f"plan_submitted_{pid}"
 if st.session_state.get(flag_key) and uid in st.session_state:
     st.markdown("### Plan Sent to Patient and Saved in EHR")
     d = st.session_state[uid]
-    st.write({
+    st.json({
         "Plan": {
             d["games"][0]: f"{d['freqs'][0]}×/wk",
             d["games"][1]: f"{d['freqs'][1]}×/wk",
