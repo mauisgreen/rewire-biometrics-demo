@@ -45,6 +45,7 @@ h2, h3, h4 {{
 /* ---------- sliders ----------- */
 div[data-baseweb="slider"] div[role="slider"] {{
     background:{REWIRE_PRIMARY};
+    background: #001E5A;
 }}
 
 /* ---------- buttons ----------- */
@@ -100,6 +101,7 @@ st.markdown(f"### {pname} ({pid})   |   **Diagnosis:** {pdiag}")
 # ---- reset homework visibility when the therapist switches patients ----
 if st.session_state.get("last_pid") != pid:
     st.session_state["assessment_done"] = False      # hide homework until new assessment
+    st.session_state[f"plan_submitted_{pid}"] = False      # reset homework-sent flag for this patient
     st.session_state["last_pid"] = pid
 # -------------- 1. SYNC LATEST DATA --------------
 if st.button("🔄 Sync Latest Data"):
@@ -320,19 +322,22 @@ if run_btn and bio_df is not None:
             value=note_default,
             key=f"note_{pid}"
         )
-        # ---------- submit ----------
-        sent = st.form_submit_button("💾 Save & Send Plan")
-        
-        if sent:
-            # save to session
-            st.session_state.plan_submitted = True
-            st.session_state[uid] = dict(games=[g1, g2, g3],
-                                         freqs=[f1, f2, f3],
-                                         note=note)
-            # immediate confirmation inside the form
-            st.success("✅ Homework plan sent to patient app and email.")
+# ---------- submit ----------
+sent = st.form_submit_button("💾 Save & Send Plan")
+
+if sent:
+    flag_key = f"plan_submitted_{pid}"          # per-patient flag
+    st.session_state[flag_key] = True
+    st.session_state[uid] = dict(
+        games=[g1, g2, g3],
+        freqs=[f1, f2, f3],
+        note=note
+    )
+    st.success("✅ Homework plan sent to patient app and email.")
+
 # ---------- confirmation panel ----------
-if st.session_state.get("plan_submitted"):
+flag_key = f"plan_submitted_{pid}"
+if st.session_state.get(flag_key) and uid in st.session_state:
     st.markdown("### Plan Sent to Patient and Saved in EHR")
     d = st.session_state[uid]
     st.write({
@@ -343,8 +348,7 @@ if st.session_state.get("plan_submitted"):
         },
         "Note": d["note"]
     })
-    if st.session_state.get("plan_submitted"):
-        st.toast("Report sent and saved ✔️")          # Streamlit ≥1.22             
+    st.toast("Report sent and saved ✔️", icon="✅")   # Streamlit ≥1.22             
 # -----------------------------
 # Sidebar: Evidence Base
 # -----------------------------
@@ -378,10 +382,10 @@ with st.sidebar.expander("Regulatory Notice"):
     **Intended Classification**: FDA **Class II** Software as a Medical Device (SaMD)  
     **Planned Pathway**: 510(k) using NeuroFormance™ as predicate  
     **Key Frameworks**  
-        • IMDRF risk-based classification  
-        • HIPAA / PHIPA data-privacy compliance  
-        • Design History File (DHF) & post-market surveillance  
-        • AI/ML transparency & human-in-the-loop oversight  
+        - IMDRF risk-based classification  
+        - HIPAA / PHIPA data-privacy compliance  
+        - Design History File (DHF) & post-market surveillance  
+        - AI/ML transparency & human-in-the-loop oversight  
     """)
     # -----------------------------
     # Sidebar: Contact Rewire
