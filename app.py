@@ -50,8 +50,6 @@ if bio_df is not None and not bio_df.empty:
 else:
     st.info("Sync to view biometric data.")
 
-else:
-    st.info("Sync to view EEG trend.")
 
 # -------------- 3. IN-CLINIC SESSION INPUT --------------
 st.markdown("---")
