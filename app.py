@@ -41,15 +41,54 @@ if st.button("🔄 Sync Latest Data"):
 bio_df = st.session_state.get("bio_df")
 eeg_df = st.session_state.get("eeg_df")
 
-if bio_df is not None and not bio_df.empty:
+if bio_df is None or bio_df.empty or eeg_df is None or eeg_df.empty:
+    st.info("Click **🔄 Sync Latest Data** to load the newest biometrics and EEG.")
+else:
+    # ---------- BIOMETRIC SNAPSHOT ----------
     latest_bio = bio_df[bio_df["patient_id"] == pid].iloc[-1]
     st.markdown("#### 📈 Latest Biometric Snapshot")
     col1, col2 = st.columns(2)
     col1.metric("Resting HR",   f"{latest_bio['resting_hr']} bpm")
     col2.metric("HRV",          f"{latest_bio['hrv']} ms")
-else:
-    st.info("Sync to view biometric data.")
 
+    # ---------- BIOMETRIC TRENDS ----------
+    st.markdown("#### 📊 30-Day Biometric Trends")
+    trend_cols = ["resting_hr", "hrv"]
+    bio_trend = (bio_df[bio_df["patient_id"] == pid]
+                 .sort_values("date")    # assume your CSV has a 'date' column
+                 .tail(30)[trend_cols]
+                 .reset_index(drop=True))
+    st.line_chart(bio_trend)
+
+    # Simple textual cue
+    delta_hrv = bio_trend["hrv"].iloc[-1] - bio_trend["hrv"].iloc[0]
+    hrv_msg = "improved 💙" if delta_hrv > 5 else "declined 🔻" if delta_hrv < -5 else "stable ⚪️"
+    st.caption(f"HRV has {hrv_msg} over the last 30 days.")
+
+    # ---------- EEG TREND + EXPLANATION ----------
+    st.markdown("#### 🧠 EEG Trend (FAA & TBR, last 4 sessions)")
+    pt_eeg = eeg_df[eeg_df["patient_id"] == pid].tail(4)
+
+    if pt_eeg.empty:
+        st.info("No EEG records for this patient yet.")
+    else:
+        # Normalise so FAA / TBR share the scale
+        z = (pt_eeg[["faa","tbr"]] - pt_eeg[["faa","tbr"]].mean()) / pt_eeg[["faa","tbr"]].std()
+        z.index = range(1, len(z)+1)
+        st.line_chart(z)
+
+        # Plain-language interpretation of the *latest* reading
+        faa = pt_eeg["faa"].iloc[-1]; tbr = pt_eeg["tbr"].iloc[-1]
+        if faa < -0.2 and tbr > 0.6:
+            interp = "⚠️ pattern suggests cognitive dysregulation (low mood + focus issues)."
+        elif faa < -0.2:
+            interp = "⬇️ asymmetry points to low motivation / mood disturbance."
+        elif tbr > 0.6:
+            interp = "↑ high TBR indicates focus/attention difficulty."
+        else:
+            interp = "✅ EEG within expected clinical range."
+
+        st.caption(f"Latest EEG reading: {interp}")
 
 # -------------- 3. IN-CLINIC SESSION INPUT --------------
 st.markdown("---")
