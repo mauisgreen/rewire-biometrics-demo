@@ -322,33 +322,33 @@ if run_btn and bio_df is not None:
             value=note_default,
             key=f"note_{pid}"
         )
-# ---------- submit ----------
-sent = st.form_submit_button("💾 Save & Send Plan")
-
-if sent:
-    flag_key = f"plan_submitted_{pid}"          # per-patient flag
-    st.session_state[flag_key] = True
-    st.session_state[uid] = dict(
-        games=[g1, g2, g3],
-        freqs=[f1, f2, f3],
-        note=note
-    )
-    st.success("✅ Homework plan sent to patient app and email.")
-
-# ---------- confirmation panel ----------
-flag_key = f"plan_submitted_{pid}"
-if st.session_state.get(flag_key) and uid in st.session_state:
-    st.markdown("### Plan Sent to Patient and Saved in EHR")
-    d = st.session_state[uid]
-    st.write({
-        "Plan": {
-            d["games"][0]: f"{d['freqs'][0]}×/wk",
-            d["games"][1]: f"{d['freqs'][1]}×/wk",
-            d["games"][2]: f"{d['freqs'][2]}×/wk"
-        },
-        "Note": d["note"]
-    })
-    st.toast("Report sent and saved ✔️", icon="✅")   # Streamlit ≥1.22             
+    # ---------- submit ----------
+    sent = st.form_submit_button("💾 Save & Send Plan")
+    
+    if sent:
+        flag_key = f"plan_submitted_{pid}"          # per-patient flag
+        st.session_state[flag_key] = True
+        st.session_state[uid] = dict(
+            games=[g1, g2, g3],
+            freqs=[f1, f2, f3],
+            note=note
+        )
+        st.success("✅ Homework plan sent to patient app and email.")
+    
+    # ---------- confirmation panel ----------
+    flag_key = f"plan_submitted_{pid}"
+    if st.session_state.get(flag_key) and uid in st.session_state:
+        st.markdown("### Plan Sent to Patient and Saved in EHR")
+        d = st.session_state[uid]
+        st.write({
+            "Plan": {
+                d["games"][0]: f"{d['freqs'][0]}×/wk",
+                d["games"][1]: f"{d['freqs'][1]}×/wk",
+                d["games"][2]: f"{d['freqs'][2]}×/wk"
+            },
+            "Note": d["note"]
+        })
+        st.toast("Report sent and saved ✔️", icon="✅")   # Streamlit ≥1.22             
 # -----------------------------
 # Sidebar: Evidence Base
 # -----------------------------
