@@ -255,114 +255,63 @@ if run_btn and bio_df is not None:
 # 6. Homework Plan Builder
 # -----------------------------
 if st.session_state.get("assessment_done"):
-    # ← **Fetch the persisted risk level here**
-    risk_key = f"risk_level_{pid}"
-    level    = st.session_state.get(risk_key, "Low")
-    
+    # pull back the risk level you stored earlier (or default to "Low")
+    level_key = f"risk_level_{pid}"
+    level     = st.session_state.get(level_key, "Low")
+
     st.markdown("---")
     st.subheader("Homework Plan Builder")
-
-    # ---- initialise persistent defaults per patient ---------------
-    uid = f"{pid}_defaults"
-    if uid not in st.session_state:
-        # Simple rule-based suggestion
-        if level == "High":
-            games  = ["Cognitive Reframing", "Emotion Labeling", "Guided Breathing"]
-            freqs  = [7, 5, 7]
-        elif level == "Moderate":
-            games  = ["Cognitive Flexibility", "Emotion Check-In", "Guided Breathing"]
-            freqs  = [4, 3, 7]
-        else:
-            games  = ["Resilience Booster", "Emotion Check-In", "Evening Calm"]
-            freqs  = [2, 2, 5]
-
-        if pdiag == "PTSD":
-            games[1] = "Stress Inoculation"; freqs[1] = 4
-        st.session_state[uid] = dict(games=games, freqs=freqs, note="Focus on consistency this week.")
-
-    # Persisted defaults
-    games = st.session_state[uid]["games"]
-    freqs = st.session_state[uid]["freqs"]
-    note_default = st.session_state[uid]["note"]
-
     st.info(
         f"Plan suggested from latest EEG & biometrics "
         f"(diagnosis **{pdiag}**, risk **{level}**). You can edit anything."
     )
 
-    # ---------- EDITABLE FORM ----------
+    # init per‐patient defaults exactly once
+    defaults_key = f"{pid}_defaults"
+    if defaults_key not in st.session_state:
+        if level == "High":
+            games  = ["Cognitive Reframing","Emotion Labeling","Guided Breathing"]
+            freqs  = [7,5,7]
+        elif level == "Moderate":
+            games  = ["Cognitive Flexibility","Emotion Check-In","Guided Breathing"]
+            freqs  = [4,3,7]
+        else:
+            games  = ["Resilience Booster","Emotion Check-In","Evening Calm"]
+            freqs  = [2,2,5]
+        if pdiag == "PTSD":
+            games[1], freqs[1] = "Stress Inoculation", 4
+        st.session_state[defaults_key] = {"games":games,"freqs":freqs,"note":"Focus on consistency this week."}
+
+    defaults = st.session_state[defaults_key]
+    choices  = game_options[pdiag]
+
+    # one form with three selects + sliders + text area
     with st.form(key=f"plan_form_{pid}", clear_on_submit=False):
-        # ---------- widgets ----------
-        all_choices = game_options[pdiag]
+        g1 = st.selectbox("Cognitive Game",      choices, index=choices.index(defaults["games"][0]))
+        g2 = st.selectbox("Emotion Regulation Game", choices, index=choices.index(defaults["games"][1]))
+        g3 = st.selectbox("Evening Wind-down Game",   choices, index=choices.index(defaults["games"][2]))
 
-        idx1 = all_choices.index(games[0]) if games[0] in all_choices else 0
-        g1   = st.selectbox("Cognitive Game", all_choices, index=idx1, key=f"g1_{pid}")
-        choices2 = [c for c in all_choices if c != g1]
-        idx2     = choices2.index(games[1]) if games[1] in choices2 else 0
-        g2       = st.selectbox("Emotion Game", choices2, index=idx2, key=f"g2_{pid}")
-        choices3 = [c for c in all_choices if c not in (g1, g2)]
-        idx3     = choices3.index(games[2]) if games[2] in choices3 else 0
-        g3       = st.selectbox("Evening Game", choices3, index=idx3, key=f"g3_{pid}")
-        
-        g1 = st.selectbox("Cognitive Game", all_choices, index=idx1, key=f"f1_{pid}")
-        g2 = st.selectbox("Emotion Game",   all_choices, index=idx2, key=f"f2_{pid}")
-        g3 = st.selectbox("Evening Game",   all_choices, index=idx3, key=f"f3_{pid}")
+        f1 = st.slider(f"{g1} per week", 1, 7, defaults["freqs"][0])
+        f2 = st.slider(f"{g2} per week", 1, 7, defaults["freqs"][1])
+        f3 = st.slider(f"{g3} per week", 1, 7, defaults["freqs"][2])
 
-        f1 = st.slider(
-            f"{g1} · sessions / week",
-            1, 7, freqs[0],
-            key=f"f1_{pid}_{g1}"
-        )
+        note = st.text_area("Message to patient", value=defaults["note"])
 
-        f2 = st.slider(
-            f"{g2} · sessions / week",
-            1, 7, freqs[1],
-            key=f"f2_{pid}_{g2}"
-        )
-
-        f3 = st.slider(
-            f"{g3} · sessions / week",
-            1, 7, freqs[2],
-            key=f"f3_{pid}_{g3}"
-        )
-
-        note = st.text_area(
-             "Message to patient",
-            value=note_default,
-            key=f"note_{pid}"
-        )
-    # ---------- submit ----------
         sent = st.form_submit_button("💾 Save & Send Plan")
-        
         if sent:
-            flag_key = f"plan_submitted_{pid}"          # per-patient flag
-            st.session_state[flag_key] = True
-            st.session_state[uid] = dict(
-                games=[g1, g2, g3],
-                freqs=[f1, f2, f3],
-                note=note
-            )
+            st.session_state[defaults_key] = {"games":[g1,g2,g3],"freqs":[f1,f2,f3],"note":note}
+            st.session_state[f"plan_submitted_{pid}"] = True
             st.success("✅ Homework plan sent to patient app and email.")
-    
-# ---------- confirmation panel ----------
-flag_key = f"plan_submitted_{pid}"
-if st.session_state.get(flag_key) and uid in st.session_state:
-    st.markdown("### Plan Sent to Patient and Saved in EHR")
-    d = st.session_state[uid]
 
-    # build a dict of all three games
-    plan_dict = { 
-        game: f"{freq}×/wk"
-        for game, freq in zip(d["games"], d["freqs"]) 
-    }
-
-    # render it as a markdown list
-    for game, freq in plan_dict.items():
-        st.markdown(f"- **{game}**: {freq}")
-
-    st.markdown(f"**Note:** {d['note']}")
-
-    st.toast("Report sent and saved ✔️", icon="✅")             
+    # after‐submit confirmation
+    flag = f"plan_submitted_{pid}"
+    if st.session_state.get(flag):
+        st.markdown("### Plan Sent to Patient and Saved in EHR")
+        plan = st.session_state[defaults_key]
+        for game, freq in zip(plan["games"], plan["freqs"]):
+            st.markdown(f"- **{game}**: {freq}×/wk")
+        st.markdown(f"**Note:** {plan['note']}")
+        st.toast("Report sent and saved ✔️", icon="✅")            
 # -----------------------------
 # Sidebar: Evidence Base
 # -----------------------------
