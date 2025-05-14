@@ -297,10 +297,10 @@ with st.sidebar.expander("Regulatory Notice"):
     **Intended Classification**: FDA **Class II** Software as a Medical Device (SaMD)  
     **Planned Pathway**: 510(k) using NeuroFormance™ as predicate  
     **Key Frameworks**  
-    • IMDRF risk-based classification  
-    • HIPAA / PHIPA data-privacy compliance  
-    • Design History File (DHF) & post-market surveillance  
-    • AI/ML transparency & human-in-the-loop oversight  
+        • IMDRF risk-based classification  
+        • HIPAA / PHIPA data-privacy compliance  
+        • Design History File (DHF) & post-market surveillance  
+        • AI/ML transparency & human-in-the-loop oversight  
     """)
     # -----------------------------
     # Sidebar: Contact Rewire
