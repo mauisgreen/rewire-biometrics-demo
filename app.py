@@ -81,40 +81,88 @@ if run_btn and bio_df is not None:
     icon  = ("🟢","🟡","🔴")[(score>30)+(score>60)]
     st.subheader(f"{icon} Stress Risk: **{level}**   · Score {score}/100")
 
-    # ------------ 5. EEG INTERPRETATION -------------
-    if eeg_df is not None and not pt_eeg.empty:
-        ffa = pt_eeg["faa"].iloc[-1]; tbr = pt_eeg["tbr"].iloc[-1]
-        st.markdown("##### EEG Interpretation")
-        if ffa < -0.2 and tbr > 0.6:
-            st.warning("⚠️ Cognitive dysregulation — consider reframing & focus games.")
-        elif ffa < -0.2:
-            st.info("⬇️ Right-biased FAA — mood / motivation low.")
-        elif tbr > 0.6:
-            st.info("↑ High TBR — attention drift detected.")
-        else:
-            st.success("✅ EEG within expected range.")
+    # ---------------- EEG section ----------------
+    st.markdown("#### 🧠 Neuro-score Progress")
 
-    # ------------- 6. HOMEWORK PLAN BUILDER ----------
+    try:
+        df = pd.read_csv("rewire_clean_eeg_sample.csv")
+        pt_eeg = df[df["patient_id"] == pid].tail(4)
+
+        if pt_eeg.empty:
+            st.info("No EEG records for this patient.")
+        else:
+            # ----- z-score normalisation -----
+            z = (pt_eeg[["faa", "tbr"]] - pt_eeg[["faa", "tbr"]].mean()) / pt_eeg[["faa", "tbr"]].std()
+            pt_eeg["neuro_score"] = z.mean(axis=1)   # average of the two z-scores
+
+            latest_ns   = pt_eeg["neuro_score"].iloc[-1]
+            baseline_ns = pt_eeg["neuro_score"].iloc[0]
+            delta       = latest_ns - baseline_ns
+
+            # Bar colour: better = blue, worse = red, same = grey
+            colour = "royalblue" if delta < -0.3 else "orangered" if delta > 0.3 else "lightgrey"
+
+            st.metric(label="Change vs. baseline",
+                    value=f"{delta:+.2f} SD",
+                    delta=None)
+
+            # Bar chart (single row)
+            import altair as alt
+            bar_df = pd.DataFrame({"label": ["Progress"], "value": [delta]})
+
+            bar = alt.Chart(bar_df).mark_bar(size=40, color=colour).encode(
+                x=alt.X("value:Q", scale=alt.Scale(domain=[-2, 2]), title="Better  ◀︎                  ▶︎  Worse"),
+                y=alt.Y("label:N", title="")
+            )
+            st.altair_chart(bar, use_container_width=True)
+
+            # Optional brain overlay image if you have PNG called brain_overlay.png
+            # from PIL import Image
+            # brain = Image.open("brain_overlay.png")
+            # st.image(brain, caption="Blue = improvement, Red = over-activation", use_column_width=True)
+
+    except FileNotFoundError:
+        st.error("EEG file missing. Place 'rewire_clean_eeg_sample.csv' next to app.py")
+
+    # -----------------------------
+    # 6. Homework Plan Builder
+    # -----------------------------
     st.markdown("---")
-    st.subheader("Homework Plan (editable)")
-    opts = game_options[pdiag]
-    g1 = st.selectbox("Cognitive Game", opts, index=0, key="g1")
-    g2 = st.selectbox("Emotion Game",   opts, index=1, key="g2")
-    g3 = st.selectbox("Evening Game",   opts, index=2, key="g3")
+    st.subheader("Homework Plan Builder")
+
+    st.markdown("Select therapeutic games and weekly schedule:")
+
+    # 1st dropdown
+    all_choices = game_options[pdiag][:]
+    g1 = st.selectbox("Cognitive Game", all_choices, key="g1")
+
+    # 2nd dropdown (remove g1)
+    choices_lvl2 = [g for g in all_choices if g != g1]
+    g2 = st.selectbox("Emotion Regulation Game", choices_lvl2, key="g2")
+
+    # 3rd dropdown (remove g1 & g2)
+    choices_lvl3 = [g for g in all_choices if g not in (g1, g2)]
+    g3 = st.selectbox("Evening Wind-down Game", choices_lvl3, key="g3")
+
+    # Frequencies
     f1 = st.slider(f"{g1} per week", 1, 7, 5, key="f1")
     f2 = st.slider(f"{g2} per week", 1, 7, 3, key="f2")
     f3 = st.slider(f"{g3} per week", 1, 7, 7, key="f3")
-    msg = st.text_area("Message to patient", "Focus on consistency this week.")
 
-    if st.button("Save & Send Plan"):
-        # Here you’d POST to an email / app API; we just echo JSON
-        st.success("Plan saved & sent.")
+    # Therapist message
+    msg = st.text_area("Message to patient", "Focus on consistency and practice this week.")
+
+    # Save / send
+    if st.button("💾 Save & Send Plan"):
+        # TODO: real API / DB call here
+        st.success("✅ Homework sent successfully!")
+        # st.balloons()  # uncomment for celebration
         st.json({
-            "timestamp": datetime.now().isoformat(timespec='seconds'),
-            "patient": pid,
-            "risk": level,
-            "games": {g1: f"{f1}×/wk", g2: f"{f2}×/wk", g3: f"{f3}×/wk"},
-            "note": msg
+            "Patient": pname,
+            "Diagnosis": pdiag,
+            "Risk":    risk_level,
+            "Games":   {g1: f"{f1}×/wk", g2: f"{f2}×/wk", g3: f"{f3}×/wk"},
+            "Message": msg
         })
 
 # -----------------------------
