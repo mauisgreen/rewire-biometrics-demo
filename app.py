@@ -34,43 +34,44 @@ div[data-testid="stForm"] {{
     border-radius:12px;
     box-shadow:0 2px 6px rgba(0,0,0,0.08);
 }}
+
 /* ---------- headers ----------- */
 h2, h3, h4 {{
     color:{REWIRE_PRIMARY};
+    font-family: "Inter", sans-serif;     /* ← Inter here too */
     font-weight:600;
 }}
+
 /* ---------- sliders ----------- */
-.css-14pt78w .stSlider > div[data-baseweb="slider"] > div {{
+div[data-baseweb="slider"] div[role="slider"] {{
     background:{REWIRE_PRIMARY};
 }}
+
 /* ---------- buttons ----------- */
 div.stButton > button:first-child {{
     background:{REWIRE_PRIMARY};
     color:#fff;
     border:none;
     border-radius:8px;
+    font-family: "Inter", sans-serif;
 }}
 div.stButton > button:first-child:hover {{
     background:{REWIRE_ACCENT};
-    color:#fff;
 }}
-/* ---------- success / info boxes ----------- */
-.stAlert>div[data-testid="stMarkdownContainer"] {{
-    font-weight:500;
-}}
+
 .stAlert-success {{
     background:#E0F8F4;
     border-left:6px solid {REWIRE_PRIMARY};
     color:#0f7768;
 }}
+
 .stToast {{
-    background:{REWIRE_PRIMARY} !important;
-    color:#fff !important;
+    background:{REWIRE_PRIMARY}!important;
+    color:#fff!important;
 }}
 </style>
 """,
-unsafe_allow_html=True
-)
+unsafe_allow_html=True)
 
 # -------------- PATIENT & GAME DB --------------
 patients = {
