@@ -64,8 +64,8 @@ else:
 st.markdown("---")
 st.subheader("📋 In-Clinic Session Notes")
 with st.form("session_form"):
-    meds_taken = st.radio("Medication given in clinic?", ("Yes", "No"))
-    therapist_note = st.text_area("Observations / triggers")
+    meds_taken = st.radio("Medication adherence reported?", ("Yes", "No", "NA"))
+    therapist_note = st.text_area("Observations / triggers during session")
     run_btn = st.form_submit_button("Run Assessment")
 
 # -------------- 4. RISK ASSESSMENT --------------
@@ -139,7 +139,7 @@ st.caption("Version 0.4 · Last updated: May 13, 2025")
 # -----------------------------
 # Sidebar: Evidence Base
 # -----------------------------
-with st.sidebar.expander("🧠 Evidence Base: Research Behind Rewire"):
+with st.sidebar.expander("Research Behind Rewire"):
     st.markdown("""
     Rewire DTx is grounded in peer-reviewed research on stress physiology, digital therapeutics, and neurocognitive rehabilitation:
 
@@ -159,5 +159,5 @@ with st.sidebar.expander("🧠 Evidence Base: Research Behind Rewire"):
     - **Remote Monitoring & Behavioral Change:**
       - Mohr et al. (2013). *Behavioral Intervention Technologies: Evidence Base & Roadmap*. [Link](https://pubmed.ncbi.nlm.nih.gov/23590427/)
 
-    These sources inform our clinical logic, scoring heuristics, and therapeutic interventions.
+    These sources inform our clinical logic, scoring heuristics, and therapeutic interventions. If you have any questions about the evidence base or methodology, please reach out to our clinical team at **clinical@rewiredtx.com**.
     """)

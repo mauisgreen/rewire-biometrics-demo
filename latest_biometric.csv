@@ -1,0 +1,4 @@
+patient_id,sleep,activity,resting_hr,hrv
+RW-001,6.8,40,77,55
+RW-002,5.9,25,88,42
+RW-003,7.2,60,72,65
