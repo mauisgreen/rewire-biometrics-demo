@@ -26,7 +26,7 @@ body, .main {{
 
 /* ---------- cards / containers ----------- */
 .block-container {{
-    padding-top: 2rem;
+    padding-top: 3rem;
 }}
 div[data-testid="stForm"] {{
     background:{REWIRE_CARD_BG};
