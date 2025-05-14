@@ -297,9 +297,14 @@ if st.session_state.get("assessment_done"):
         all_choices = game_options[pdiag]
 
         idx1 = all_choices.index(games[0]) if games[0] in all_choices else 0
-        idx2 = all_choices.index(games[1]) if games[1] in all_choices else 0
-        idx3 = all_choices.index(games[2]) if games[2] in all_choices else 0
-
+        g1   = st.selectbox("Cognitive Game", all_choices, index=idx1)
+        choices2 = [c for c in all_choices if c != g1]
+        idx2     = choices2.index(games[1]) if games[1] in choices2 else 0
+        g2       = st.selectbox("Emotion Game", choices2, index=idx2)
+        choices3 = [c for c in all_choices if c not in (g1, g2)]
+        idx3     = choices3.index(games[2]) if games[2] in choices3 else 0
+        g3       = st.selectbox("Evening Game", choices3, index=idx3)
+        
         g1 = st.selectbox("Cognitive Game", all_choices, index=idx1)
         g2 = st.selectbox("Emotion Game",   all_choices, index=idx2)
         g3 = st.selectbox("Evening Game",   all_choices, index=idx3)
