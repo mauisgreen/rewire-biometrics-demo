@@ -131,6 +131,34 @@ elif page == "Patient Profile":
             }).set_index("Session")
 
             st.line_chart(eeg_chart_data)
+
+            # Latest EEG reading (simulated)
+            latest_faa = patient_eeg["faa"].iloc[-1]
+            latest_tbr = patient_eeg["tbr"].iloc[-1]
+
+            # Clinician-friendly interpretation
+            st.markdown("### EEG Interpretation (Latest Session)")
+
+            if latest_faa < -0.2 and latest_tbr > 0.6:
+                st.warning("⚠️ EEG suggests **cognitive dysregulation** — recommend **reframing + focus games**.")
+            elif latest_faa < -0.2:
+                st.info("⬇️ Frontal asymmetry suggests **low motivation** or **mood disturbance**.")
+            elif latest_tbr > 0.6:
+                st.info("↑ Elevated TBR suggests **attention or focus difficulties**.")
+            else:
+                st.success("✅ EEG appears **within normal ranges**.")
+
+            # Optional chart: FAA vs TBR
+            st.markdown("### FAA vs TBR Diagnostic Map")
+            import altair as alt
+            chart = alt.Chart(patient_eeg).mark_circle(size=80).encode(
+                x=alt.X("faa", title="Frontal Alpha Asymmetry"),
+                y=alt.Y("tbr", title="Theta/Beta Ratio"),
+                tooltip=["faa", "tbr", "diagnosis"] if "diagnosis" in patient_eeg.columns else ["faa", "tbr"],
+                color=alt.value("steelblue")
+            ).interactive()
+            st.altair_chart(chart, use_container_width=True)
+
         else:
             st.warning("FAA and TBR columns not found in EEG dataset.")
 
@@ -145,6 +173,7 @@ elif page == "Patient Profile":
 
     st.subheader("Homework Compliance")
     st.metric("Game Completion Rate", "72%", "-10% from last month")
+
 
 # -----------------------------
 # 4. Therapist: Plan Builder
