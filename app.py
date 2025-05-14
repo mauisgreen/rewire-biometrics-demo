@@ -5,9 +5,12 @@ from datetime import datetime
 from PIL import Image
 import streamlit_authenticator as stauth
 
+# -------------- CONFIG --------------
+st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
+
 names = ["Maureen Green"]
-usernames = ["maureen"]
-passwords = ["rewiresecure"]
+usernames = ["mauisgreen"]
+passwords = ["rewiredemo"]
 
 hashed_pw = stauth.Hasher(passwords).generate()
 
@@ -26,9 +29,6 @@ elif authentication_status is None:
     st.stop()
 else:
     authenticator.logout("Logout", "sidebar")
-
-# -------------- CONFIG --------------
-st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
 
 # ---------- Rewire brand palette ----------
 REWIRE_PRIMARY   = "#001E5A"   # dark navy
