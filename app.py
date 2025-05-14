@@ -17,23 +17,6 @@ st.markdown(
 f"""
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-st.markdown(
-    """
-    <style>
-      /* Opt out of Chrome’s forced dark mode and always render our light background */
-      :root {
-        /* tell browsers we only support light scheme */
-        color-scheme: light;
-      }
-      @media (prefers-color-scheme: dark) {
-        body, .main {
-          background-color: #F5F7FA !important;
-        }
-      }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 <style>
 /* ---------- global ----------- */
 body, .main {{
