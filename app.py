@@ -4,6 +4,9 @@ import altair as alt
 from datetime import datetime
 from PIL import Image
 
+# -------------- CONFIG --------------
+st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
+
 # ---------- Rewire brand palette ----------
 REWIRE_PRIMARY   = "#00BFA5"   # teal-green
 REWIRE_ACCENT    = "#FF6F61"   # coral
@@ -66,9 +69,6 @@ div.stButton > button:first-child:hover {{
 unsafe_allow_html=True
 )
 
-
-# -------------- CONFIG --------------
-st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
 # -------------- PATIENT & GAME DB --------------
 patients = {
     "RW-001": {"name": "Alex Rivera",  "diagnosis": "PTSD"},
