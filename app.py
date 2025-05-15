@@ -15,9 +15,9 @@ hashed_pw = [
 ]
 
 authenticator = stauth.Authenticate(
-    names,
-    usernames,
-    hashed_pw,
+    names=names,
+    usernames=usernames,
+    passwords=hashed_pw,
     cookie_name="rewire_demo",
     key="rewire_cookie",
     cookie_expiry_days=1
