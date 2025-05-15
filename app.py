@@ -353,11 +353,11 @@ with st.sidebar.expander("Research Behind Rewire"):
     - **Remote Monitoring & Behavioral Change:**
         - Mohr et al. (2013). *Behavioral Intervention Technologies: Evidence Base & Roadmap*. [Link](https://pubmed.ncbi.nlm.nih.gov/23590427/)
 
-    - **Curious how Rewire calculates stress risk and adapts over time?**
-        - [Scoring Logic & ML Integration (PDF)](https://drive.google.com/file/d/1cNd76Lr8h0Oka5Y4mlme95MT9OiR67X8/view?usp=sharing)
+    - **Curious how Fake Company calculates stress risk and adapts over time?**
+        - [Scoring Logic & ML Integration (PDF)](https://drive.google.com/file/d/14sLD_65a52ky-Zsuex9oM64HOhM6hDp4/view?usp=sharing)
     
     - **Want to see a Mock FDA submission and Design History File?**
-        - [Mock FDA Submission and DHF (PDF)](https://drive.google.com/file/d/1MloaLGcF4x1DKya_vzF1xppGKXM4Mw0Y/view?usp=sharing)
+        - [Mock FDA Submission and DHF (PDF)](https://drive.google.com/file/d/14kfWcFuzY_L_1I3XstBcgBKKmCkgE5xZ/view?usp=sharing)
     
     These sources inform our clinical logic, scoring heuristics, and therapeutic interventions. If you have any questions about the evidence base or methodology, please reach out to our clinical team at **clinical@rewiredtx.com**.
     """)
@@ -367,7 +367,7 @@ with st.sidebar.expander("Research Behind Rewire"):
 with st.sidebar.expander("Regulatory Notice"):
     st.markdown("""
     **Intended Classification**: FDA **Class II** Software as a Medical Device (SaMD)  
-    **Planned Pathway**: 510(k) using NeuroFormance™ as predicate  
+    **Planned Pathway**: 510(k) using X as predicate  
     **Key Frameworks**  
         - IMDRF risk-based classification  
         - HIPAA / PHIPA data-privacy compliance  
@@ -380,10 +380,10 @@ with st.sidebar.expander("Regulatory Notice"):
     with st.sidebar.expander("Contact Rewire"):
         st.markdown("""
         **Email**  
-        [info@rewiredtx.com](mailto:info@rewiredtx.com)
+        [info@notarealsite.com](mailto:mauisgreen@gmail.com)
 
         **Office**  
-        #208 – 698 Seymour St  
+        #Unit - Not a real address St. 
         Vancouver, BC  
         Canada
         """)
@@ -391,8 +391,8 @@ with st.sidebar.expander("Regulatory Notice"):
 # Footer
 # -----------------------------
 st.markdown("---")
-st.markdown("Questions or concerns? Contact **maureen@rewiredtx.com** or visit [rewiredtx.com](https://www.rewiredtx.com)")
+st.markdown("Questions or concerns? Contact **mauisgreen@gmail.com** or visit [notarealsite.com](https://www.google.com)")
 st.info("This tool is for demonstration purposes only and not yet approved for clinical use.")
 
-st.caption("Version 0.4 · Last updated: May 13, 2025")
+st.caption("Version 0.4 · Last updated: May 14, 2025")
 
