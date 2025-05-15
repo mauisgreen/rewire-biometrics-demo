@@ -1,12 +1,12 @@
 import streamlit as st
+# -------------- CONFIG --------------
+st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
+
 import pandas as pd
 import altair as alt
 from datetime import datetime
 from PIL import Image
 import streamlit_authenticator as stauth
-
-# -------------- CONFIG --------------
-st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
 
 names = ["Maureen Green"]
 usernames = ["mauisgreen"]
