@@ -5,6 +5,7 @@ from datetime import datetime
 from PIL import Image
 # -------------- CONFIG --------------
 st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
+
 # ---------- Rewire brand palette ----------
 REWIRE_PRIMARY   = "#001E5A"   # dark navy
 REWIRE_ACCENT    = "#3E5EE4"   # hover / accent blue
@@ -71,7 +72,11 @@ div.stButton > button:first-child:hover {{
 </style>
 """,
 unsafe_allow_html=True)
-
+st.markdown("""
+<div style='background-color:#ffe6e6; padding: 1rem; border-left: 6px solid red; border-radius: 6px; margin-bottom: 1rem;'>
+    <strong>Disclaimer:</strong> This app is a personal demo project created by Maureen Green. It is <strong>not affiliated with or endorsed by Rewire DTx</strong>. All content and functionality are for demonstration purposes only.
+</div>
+""", unsafe_allow_html=True)
 # -------------- PATIENT & GAME DB --------------
 patients = {
     "RW-001": {"name": "Alex Rivera",  "diagnosis": "PTSD"},
