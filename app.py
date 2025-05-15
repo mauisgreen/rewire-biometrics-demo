@@ -11,7 +11,7 @@ import streamlit_authenticator as stauth
 names = ["Maureen Green"]
 usernames = ["mauisgreen"]
 hashed_pw = [
-    '$2b$12$AxKPYzpBvOSk1dEZRPd7vOHDwvfYuTz4yHc3DN6KUDaMiIuIdVjly'
+    "$2b$12$AxKPYzpBvOSk1dEZRPd7vOHDwvfYuTz4yHc3DN6KUDaMiIuIdVjly"
 ]
 
 authenticator = stauth.Authenticate(
