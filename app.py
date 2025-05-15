@@ -10,13 +10,17 @@ import streamlit_authenticator as stauth
 
 names = ["Maureen Green"]
 usernames = ["mauisgreen"]
-passwords = ["rewiredemo"]
-
-hashed_pw = stauth.Hasher(passwords).generate()
+hashed_pw = [
+    '$2b$12$AxKPYzpBvOSk1dEZRPd7vOHDwvfYuTz4yHc3DN6KUDaMiIuIdVjly'
+]
 
 authenticator = stauth.Authenticate(
-    names, usernames, hashed_pw,
-    "rewire_demo", "rewire_cookie", cookie_expiry_days=1
+    names,
+    usernames,
+    hashed_pw,
+    cookie_name="rewire_demo",
+    key="rewire_cookie",
+    cookie_expiry_days=1
 )
 
 name, authentication_status, username = authenticator.login("Login", "main")
