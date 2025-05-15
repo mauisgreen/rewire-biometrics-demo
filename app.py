@@ -353,6 +353,7 @@ with st.sidebar.expander("Research Behind Rewire"):
     
     - **Want to see a Mock FDA submission and Design History File?**
         - [Mock FDA Submission and DHF (PDF)](https://drive.google.com/file/d/1MloaLGcF4x1DKya_vzF1xppGKXM4Mw0Y/view?usp=sharing)
+    
     These sources inform our clinical logic, scoring heuristics, and therapeutic interventions. If you have any questions about the evidence base or methodology, please reach out to our clinical team at **clinical@rewiredtx.com**.
     """)
 # -----------------------------
