@@ -3,6 +3,48 @@ import pandas as pd
 import altair as alt
 from datetime import datetime
 from PIL import Image
+import streamlit_authenticator as stauth
+import yaml
+from yaml.loader import SafeLoader
+
+# ---------- AUTHENTICATION CONFIG ----------
+config = {
+    'credentials': {
+        'usernames': {
+            'mauisgreen': {
+                'name': 'Maureen Green',
+                'password': '$2b$12$AxKPYzpBvOSk1dEZRPd7vOHDwvfYuTz4yHc3DN6KUDaMiIuIdVjly'  # hashed 'rewiredemo'
+            }
+        }
+    },
+    'cookie': {
+        'name': 'rewire_demo_cookie',
+        'key': 'supersecretkey',  # replace with a secure random string in production
+        'expiry_days': 1
+    },
+    'preauthorized': {
+        'emails': []
+    }
+}
+
+authenticator = stauth.Authenticate(
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days'],
+    config['preauthorized']
+)
+
+name, authentication_status, username = authenticator.login("Login", "main")
+
+if authentication_status is False:
+    st.error("Invalid username or password")
+    st.stop()
+elif authentication_status is None:
+    st.warning("Please enter your credentials")
+    st.stop()
+else:
+    authenticator.logout("Logout", "sidebar")
 # -------------- CONFIG --------------
 st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
 
