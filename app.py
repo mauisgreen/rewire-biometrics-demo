@@ -21,7 +21,8 @@ config = {
         'name': 'rewire_demo',
         'key': 'rewire_cookie',
         'expiry_days': 1
-    }
+    },
+    'preauthorized': {}  # <--- REQUIRED in latest versions!
 }
 
 authenticator = stauth.Authenticate(config)
