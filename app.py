@@ -3,7 +3,7 @@ import pandas as pd
 import altair as alt
 from datetime import datetime
 from PIL import Image
-
+# -------------- CONFIG --------------
 st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
 
 # ---------- Rewire brand palette ----------
@@ -395,4 +395,3 @@ st.markdown("Questions or concerns? Contact **mauisgreen@gmail.com** or visit [n
 st.info("This tool is for demonstration purposes only and not yet approved for clinical use.")
 
 st.caption("Version 0.4 · Last updated: May 14, 2025")
-
