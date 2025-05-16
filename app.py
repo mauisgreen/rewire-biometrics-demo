@@ -24,12 +24,7 @@ config = {
     }
 }
 
-authenticator = stauth.Authenticate(
-    credentials=config['credentials'],
-    cookie_name=config['cookie']['name'],
-    key=config['cookie']['key'],
-    cookie_expiry_days=config['cookie']['expiry_days']
-)
+authenticator = stauth.Authenticate(config)
 
 name, authentication_status, username = authenticator.login("Login", "main")
 
