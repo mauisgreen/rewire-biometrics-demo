@@ -22,7 +22,7 @@ config = {
         'key': 'rewire_cookie',
         'expiry_days': 1
     },
-    'preauthorized': {}  # <--- REQUIRED in latest versions!
+    'pre_authorized': {}  # <-- must include underscore!
 }
 
 authenticator = stauth.Authenticate(config)
