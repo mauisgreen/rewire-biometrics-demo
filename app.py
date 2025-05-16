@@ -4,22 +4,22 @@ import altair as alt
 from datetime import datetime
 from PIL import Image
 import streamlit_authenticator as stauth
-import yaml
-from yaml.loader import SafeLoader
 
-# ---------- AUTHENTICATION CONFIG ----------
+st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
+
+# -------- AUTHENTICATION CONFIG --------
 config = {
     'credentials': {
         'usernames': {
             'mauisgreen': {
                 'name': 'Maureen Green',
-                'password': '$2b$12$AxKPYzpBvOSk1dEZRPd7vOHDwvfYuTz4yHc3DN6KUDaMiIuIdVjly'  # hashed 'rewiredemo'
+                'password': '$2b$12$AxKPYzpBvOSk1dEZRPd7vOHDwvfYuTz4yHc3DN6KUDaMiIuIdVjly'  # hashed "rewiredemo"
             }
         }
     },
     'cookie': {
-        'name': 'rewire_demo_cookie',
-        'key': 'supersecretkey',  # replace with a secure random string in production
+        'name': 'rewire_demo',
+        'key': 'rewire_cookie',
         'expiry_days': 1
     },
     'preauthorized': {
@@ -45,8 +45,6 @@ elif authentication_status is None:
     st.stop()
 else:
     authenticator.logout("Logout", "sidebar")
-# -------------- CONFIG --------------
-st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
 
 # ---------- Rewire brand palette ----------
 REWIRE_PRIMARY   = "#001E5A"   # dark navy
