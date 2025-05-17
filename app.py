@@ -3,6 +3,19 @@ import pandas as pd
 import altair as alt
 from datetime import datetime
 from PIL import Image
+
+# ----- Simple Password Protection -----
+PASSWORD = "rewiredemo"
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    pwd = st.text_input("Enter password to access the Rewire Dashboard", type="password")
+    if pwd == PASSWORD:
+        st.session_state.authenticated = True
+        st.experimental_rerun()
+    else:
+        st.stop()
 # -------------- CONFIG --------------
 st.set_page_config(page_title="Rewire Therapist Dashboard", layout="centered")
 
